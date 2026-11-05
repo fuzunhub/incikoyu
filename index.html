@@ -7,7 +7,7 @@
 <meta name="description" content="Deniz canlılarını kaydırıp eşleştirdiğin, Fuzun Games'in su altı bulmaca oyunu.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/f32.png">
-<link rel="apple-touch-icon" href="icons/a180.png">
+<link rel="apple-touch-icon" href="icons/a180.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -780,7 +780,7 @@ function getAC(){if(ac)return ac;try{ac=new(window.AudioContext||window.webkitAu
   /* su altı yankısı: üretilmiş darbe tepkisi */
   const len=ac.sampleRate*2.4,ir=ac.createBuffer(2,len,ac.sampleRate);for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
   const rev=ac.createConvolver();rev.buffer=ir;const revG=ac.createGain();revG.gain.value=.55;rev.connect(revG).connect(master);
-  const sfx=ac.createGain();sfx.gain.value=1;sfx.connect(master);const sfxSend=ac.createGain();sfxSend.gain.value=.35;sfx.connect(sfxSend).connect(rev);
+  const sfx=ac.createGain();sfx.gain.value=1.3;sfx.connect(master);const sfxSend=ac.createGain();sfxSend.gain.value=.35;sfx.connect(sfxSend).connect(rev);
   const mus=ac.createGain();mus.gain.value=0;const mf=ac.createBiquadFilter();mf.type='lowpass';mf.frequency.value=6500;mus.connect(mf).connect(master);const musSend=ac.createGain();musSend.gain.value=.28;mf.connect(musSend).connect(rev);
   const nb=ac.createBuffer(1,ac.sampleRate,ac.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
   AB={master,sfx,mus,mf,noise:nb};return ac}
@@ -832,7 +832,10 @@ function musTick(){if(!MUS.on||!ac)return;const game=MUS.mode==='game',bpm=game?
   MUS.int=Math.max(0,MUS.int-.03)}
 function musicStart(mode){MUS.mode=mode||MUS.mode;if(!S.mus||!S.snd)return;const a=getAC();if(!a)return;try{a.resume()}catch(e){}
   if(!MUS.on){MUS.on=true;MUS.next=a.currentTime+.1;MUS.step=0;MUS.timer=setInterval(musTick,120)}
-  AB.mus.gain.cancelScheduledValues(a.currentTime);AB.mus.gain.linearRampToValueAtTime(1.15,a.currentTime+1.5)}
+  musVol()}
+/* müzik seviyesi: haritada dolu, oyun içinde kısık (efektler öne çıksın) */
+const musTarget=()=>MUS.mode==='game'?.3:1.1;
+function musVol(){if(!ac||!AB.mus)return;const t=ac.currentTime;AB.mus.gain.cancelScheduledValues(t);AB.mus.gain.setValueAtTime(AB.mus.gain.value,t);AB.mus.gain.linearRampToValueAtTime(musTarget(),t+1.2)}
 function musicStop(){if(!ac||!MUS.on)return;AB.mus.gain.cancelScheduledValues(ac.currentTime);AB.mus.gain.linearRampToValueAtTime(0,ac.currentTime+.6);setTimeout(()=>{if(AB.mus.gain.value<.01){clearInterval(MUS.timer);MUS.on=false}},700)}
 /* kaybedince müzik su altında boğuklaşır, kazanınca açılır */
 function musMuffle(on){if(!ac||!AB.mf)return;AB.mf.frequency.cancelScheduledValues(ac.currentTime);AB.mf.frequency.linearRampToValueAtTime(on?420:6500,ac.currentTime+.8)}
@@ -1491,7 +1494,7 @@ function renderTop(){tickLives();checkCards(false);show($('cardDot'),(S.cards||[
   $('livesN').textContent=S.lives;$('livesT').textContent=S.lives>=maxLives()?'Dolu':fmt(nextLifeMs());
   $('coinsN').textContent=S.coins;$('starsN').textContent=totalStars();
   show($('reefDot'),ST.some((s,i)=>!S.st[i]&&totalStars()>=s[1]&&S.coins>=s[2]))}
-function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on)MUS.mode='calm';setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();setTimeout(nextFeatPopup,700)}
+function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on){MUS.mode='calm';musVol()}setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();setTimeout(nextFeatPopup,700)}
 function setTab(t){show($('playBar'),t==='map');[['tabMap','map','mapView'],['tabReef','reef','reefView'],['tabCards','cards','cardView']].forEach(([b,k,v])=>{$(b).setAttribute('aria-selected',t===k);show($(v),t===k)});if(t==='map')scrollToCur();if(t==='cards'){renderCards();S.cardSeen=(S.cards||[]).length;save();show($('cardDot'),false)}}
 $('tabMap').onclick=()=>setTab('map');$('tabCards').onclick=()=>setTab('cards');$('tabReef').onclick=()=>{renderReef();setTab('reef')};
 
