@@ -1937,7 +1937,7 @@ $('title').addEventListener('pointerdown',e=>{if(e.target.closest('button'))retu
   blub(Math.floor(Math.random()*5));buzz(8)});
 function renderTitle(){
   const cur=unlocked(),started=!!S.stars[0];
-  $('tPlay').textContent=started?`Devam et · Bölüm ${cur+1}`:'Oyna';
+  $('tPlay').textContent=started?'Devam et':'Oyna';
   show($('tNew'),started);
   $('tSub').textContent=started?`★ ${totalStars()} yıldız · ● ${S.coins} inci`:`${LEVELS.length} bölüm · dokun, balıklar kaçışsın`;
 }
@@ -1946,8 +1946,7 @@ function showTitle(){show($('game'),false);show($('home'),false);show($('title')
 /* oyna: kamera derine dalar, harita açılır */
 $('tPlay').onclick=()=>{if(diving)return;diving=true;$('title').classList.add('dive');tone(300,.5,'sine',.07,90);
   for(let i=0;i<30;i++)tBubs.push({x:Math.random()*TW,y:TH*(.5+Math.random()*.5),r:2+Math.random()*6,v:200+Math.random()*200,ph:Math.random()*6});
-  const fresh=!S.stars[0];
-  setTimeout(()=>{show($('title'),false);toMap();if(fresh){startLevel(0);return}const h=$('home');h.classList.remove('surfacein');void h.offsetWidth;h.classList.add('surfacein')},560)};
+  setTimeout(()=>{show($('title'),false);toMap();const h=$('home');h.classList.remove('surfacein');void h.offsetWidth;h.classList.add('surfacein')},560)};
 $('tNew').onclick=()=>{resetFromTitle=true;$('resetTitle').textContent='Yeni oyun başlasın mı?';$('resetText').textContent=`${totalStars()} yıldız, ${S.coins} inci ve açtığın istasyonlar silinir. Oyun 1. bölümden başlar.`;$('resetYes').textContent='Evet, baştan başla';show($('ovReset'),true)};
 $('resetBtn').addEventListener('click',()=>{$('resetTitle').textContent='Her şey silinsin mi?';$('resetText').textContent='Yıldızlar, inciler ve onarılan istasyonlar sıfırlanır.';$('resetYes').textContent='Evet, sıfırla'});
 /* ===== telefona kur: Android'de doğrudan kurulum, diğerlerinde adım adım tarif ===== */
