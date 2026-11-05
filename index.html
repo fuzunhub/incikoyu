@@ -12,13 +12,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="İnci Koyu">
-<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+<style>:root{box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}
 html,body{overscroll-behavior:none;-webkit-touch-callout:none}
 /* uygulama: alt çubuklar ekranın en altına kadar uzanır, çentik/ana ekran çizgisi payını kendileri bırakır */
 :root{padding-bottom:0}
 .tabs{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important}
 .gfoot{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
-.tbottom{bottom:calc(31% + env(safe-area-inset-bottom,0px))}</style>
+.tbottom{bottom:calc(31% + env(safe-area-inset-bottom,0px))}
+/* iOS tam ekran: ekranlar tüm cihazı kaplar, üst boşluğu (saat/çentik) kendileri bırakır */
+.screen{position:fixed;top:0;left:0;right:0;bottom:0;padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%}</style>
 </head>
 <body>
 <title>İnci Koyu</title>
@@ -775,7 +778,7 @@ function getAC(){if(ac)return ac;try{ac=new(window.AudioContext||window.webkitAu
   const len=ac.sampleRate*2.4,ir=ac.createBuffer(2,len,ac.sampleRate);for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
   const rev=ac.createConvolver();rev.buffer=ir;const revG=ac.createGain();revG.gain.value=.55;rev.connect(revG).connect(master);
   const sfx=ac.createGain();sfx.gain.value=1;sfx.connect(master);const sfxSend=ac.createGain();sfxSend.gain.value=.35;sfx.connect(sfxSend).connect(rev);
-  const mus=ac.createGain();mus.gain.value=0;const mf=ac.createBiquadFilter();mf.type='lowpass';mf.frequency.value=2600;mus.connect(mf).connect(master);const musSend=ac.createGain();musSend.gain.value=.6;mf.connect(musSend).connect(rev);
+  const mus=ac.createGain();mus.gain.value=0;const mf=ac.createBiquadFilter();mf.type='lowpass';mf.frequency.value=6500;mus.connect(mf).connect(master);const musSend=ac.createGain();musSend.gain.value=.28;mf.connect(musSend).connect(rev);
   const nb=ac.createBuffer(1,ac.sampleRate,ac.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
   AB={master,sfx,mus,mf,noise:nb};return ac}
 function tone(f,d,type,vol,f2){if(!S.snd)return;const a=getAC();if(!a)return;try{const t=a.currentTime,o=a.createOscillator(),g=a.createGain(),lp=a.createBiquadFilter();
@@ -794,28 +797,42 @@ const blub=i=>{bubble(i);if(i>0)chime(i)};
 const splash=()=>{noise(.5,.22,2400,300,.8);tone(140,.3,'sine',.1,60)};
 const crunch=()=>{noise(.18,.18,900,300,1.5);tone(110,.15,'square',.04,70)};
 const jingle=()=>[0,1,2,3,4,5,7].forEach((s,i)=>setTimeout(()=>{tone(pn(s+5),.6,'triangle',.06);tone(pn(s+10),.4,'sine',.02)},i*85));
-/* ===== müzik: ped akorları + bas + çan arpejleri; yoğunluk zincirle artar ===== */
+/* ===== müzik: neşeli ada ritmi (steel pan melodi + zıplayan bas + shaker); yoğunluk zincirle artar ===== */
 const MUS={on:false,next:0,step:0,timer:0,mode:'calm',int:0};
-const CHORDS=[[62,66,69,73],[59,62,66,69],[55,59,62,66],[57,61,64,66]]; /* Dmaj7 Bm7 Gmaj7 A6 */
+const CHORDS=[[62,66,69],[57,61,64],[59,62,66],[55,59,62]]; /* D A Bm G */
+const MEL=[74,0,76,78,0,76,74,0, 73,0,71,69,0,71,73,76, 78,0,78,76,74,0,71,0, 74,76,0,74,71,0,69,0,
+           74,0,74,78,81,0,78,76, 76,0,73,76,0,73,69,0, 71,74,78,0,76,74,71,74, 0,74,76,0,74,0,0,0];
 const m2f=m=>440*Math.pow(2,(m-69)/12);
-function musNote(m,t,d,type,vol,dest){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=m2f(m);
-  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.9,d*.3));g.gain.setValueAtTime(vol,t+d*.6);g.gain.linearRampToValueAtTime(0,t+d);o.connect(g).connect(dest||AB.mus);o.start(t);o.stop(t+d+.05)}
-function bell(m,t,vol){const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=m2f(m);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0005,t+1.6);o.connect(g).connect(AB.mus);o.start(t);o.stop(t+1.7)}
-function musTick(){if(!MUS.on||!ac)return;const bpm=MUS.mode==='game'?84:70,beat=60/bpm,ahead=ac.currentTime+.5;
-  while(MUS.next<ahead){const s=MUS.step,t=MUS.next,bar=Math.floor(s/8),ch=CHORDS[Math.floor(bar/2)%4],eighth=s%8;
-    if(s%16===0)for(const n of ch){musNote(n-12,t,beat*8.2,'triangle',.012);musNote(n-12+.07,t,beat*8.2,'sine',.01)}
-    if(eighth===0||eighth===4)musNote(ch[0]-24,t,beat*1.8,'sine',.05);
-    const arp=MUS.mode==='game'?(MUS.int>.3?[0,1,2,3,4,5,6,7]:[0,3,5,6]):[0,5];
-    if(arp.includes(eighth)){const pool=[...ch,ch[1]+12,ch[2]+12];bell(pool[(s*3+bar)%pool.length]+(MUS.int>1.2?12:0),t,.022+MUS.int*.008)}
-    if(MUS.int>1&&eighth%2===1)bell(ch[(s+1)%4]+24,t,.012);
+function pan(m,t,vol,d){const f=m2f(m);[[1,1],[2,.35],[3.01,.12]].forEach(([k,v])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f*k;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol*v,t+.006);g.gain.exponentialRampToValueAtTime(.0004,t+(d||.55)/k);o.connect(g).connect(AB.mus);o.start(t);o.stop(t+(d||.55)+.05)})}
+function pluck(m,t,vol,d,type){const o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=m2f(m);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(.0004,t+d);o.connect(g).connect(AB.mus);o.start(t);o.stop(t+d+.05)}
+function kick(t,vol){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(48,t+.12);
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0004,t+.18);o.connect(g).connect(AB.mus);o.start(t);o.stop(t+.2)}
+function hiss(t,vol,f,d){const s=ac.createBufferSource(),bp=ac.createBiquadFilter(),g=ac.createGain();s.buffer=AB.noise;bp.type='bandpass';bp.frequency.value=f;bp.Q.value=1.4;
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0004,t+d);s.connect(bp).connect(g).connect(AB.mus);s.start(t,Math.random()*.5);s.stop(t+d+.02)}
+function musTick(){if(!MUS.on||!ac)return;const game=MUS.mode==='game',bpm=game?116:100,beat=60/bpm,ahead=ac.currentTime+.5;
+  while(MUS.next<ahead){const s=MUS.step,t=MUS.next,bar=Math.floor(s/8),ch=CHORDS[bar%4],e=s%8,sw=e%2?beat*.06:0,tt=t+sw,I=MUS.int;
+    /* bas: kök - senkop - beşli - oktav */
+    const bp={0:ch[0]-24,3:ch[0]-24,4:ch[2]-24,6:ch[0]-12}[e];if(bp)pluck(bp,tt,.085,.32,'triangle');
+    /* davul: kalın vuruş 1-3, el çırpma 2-4, shaker ara vuruşlarda */
+    if(game||bar%2){if(e===0||e===4)kick(t,.16);if(e===2||e===6)hiss(t,.07,1900,.09)}
+    if(e%2||I>.6)hiss(tt,.025+I*.01,7000,.035);
+    /* akor vuruşları (offbeat, kalipso hissi) */
+    if(e%2)for(const n of ch)pluck(n,tt,.011,.12,'square');
+    /* melodi: steel pan */
+    const mel=MEL[s%MEL.length];
+    if(mel&&(game||bar%16<8))pan(mel+(I>1.3?12:0),tt,.045+I*.01);
+    if(mel&&I>.8)pan(mel-4+(mel%2),tt,.018);
+    if(!mel&&I>1&&e%2)pan(ch[(s>>1)%3]+24,tt,.014,.3);
     MUS.next+=beat/2;MUS.step++}
   MUS.int=Math.max(0,MUS.int-.03)}
 function musicStart(mode){MUS.mode=mode||MUS.mode;if(!S.mus||!S.snd)return;const a=getAC();if(!a)return;try{a.resume()}catch(e){}
   if(!MUS.on){MUS.on=true;MUS.next=a.currentTime+.1;MUS.step=0;MUS.timer=setInterval(musTick,120)}
-  AB.mus.gain.cancelScheduledValues(a.currentTime);AB.mus.gain.linearRampToValueAtTime(.55,a.currentTime+1.5)}
+  AB.mus.gain.cancelScheduledValues(a.currentTime);AB.mus.gain.linearRampToValueAtTime(1.15,a.currentTime+1.5)}
 function musicStop(){if(!ac||!MUS.on)return;AB.mus.gain.cancelScheduledValues(ac.currentTime);AB.mus.gain.linearRampToValueAtTime(0,ac.currentTime+.6);setTimeout(()=>{if(AB.mus.gain.value<.01){clearInterval(MUS.timer);MUS.on=false}},700)}
 /* kaybedince müzik su altında boğuklaşır, kazanınca açılır */
-function musMuffle(on){if(!ac||!AB.mf)return;AB.mf.frequency.cancelScheduledValues(ac.currentTime);AB.mf.frequency.linearRampToValueAtTime(on?420:2600,ac.currentTime+.8)}
+function musMuffle(on){if(!ac||!AB.mf)return;AB.mf.frequency.cancelScheduledValues(ac.currentTime);AB.mf.frequency.linearRampToValueAtTime(on?420:6500,ac.currentTime+.8)}
 const musBoost=k=>{MUS.int=Math.min(2,MUS.int+k)};
 addEventListener('pointerdown',()=>{if(S.mus&&S.snd&&!MUS.on)musicStart()},{passive:true});
 document.addEventListener('visibilitychange',()=>{if(!ac)return;try{document.hidden?ac.suspend():ac.resume()}catch(e){}});
@@ -1790,7 +1807,8 @@ function renderPet(){const p=pet(),l=petLv(),nx=PET_LV[l+1];
   $('petPerks').innerHTML=[['Genç','Beslediğin her gün +1 can'],['Yetişkin','Zaferlerde %10 fazla inci'],['Bilge','Bölümlerin yarısına yunusla başlarsın']].map(([n,t],i)=>`<li class="${l>=i+1?'on':''}"><b>${n}:</b> ${t}</li>`).join('')}
 
 /* iPhone'da ana ekrandan açılınca %100 yükseklik ekrandan kısa hesaplanabiliyor: gerçek pencere yüksekliğine sabitle */
-function fitH(){const h=window.innerHeight;if(h>0){document.documentElement.style.height=h+'px'}}
+const STANDALONE=navigator.standalone||matchMedia('(display-mode: fullscreen),(display-mode: standalone)').matches;
+function fitH(){if(STANDALONE){document.documentElement.style.height='';return}const h=window.innerHeight;if(h>0){document.documentElement.style.height=h+'px'}}
 fitH();addEventListener('resize',()=>{fitH()});addEventListener('orientationchange',()=>setTimeout(fitH,300));
 if(window.visualViewport)visualViewport.addEventListener('resize',fitH);
 showTitle();
