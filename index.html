@@ -158,6 +158,10 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 .node.boss{width:78px;height:78px;margin:-39px 0 0 -39px;font-size:26px;border-width:4px;border-color:#F6D77A!important;box-shadow:0 6px 0 #6E3F16,0 0 22px rgba(255,140,90,.55)!important;background:radial-gradient(circle at 35% 30%,#FFB38A,#C2412F)!important;color:#fff}
 .node.boss.done{background:radial-gradient(circle at 35% 30%,#fff,#FFE3B0 50%,#E9B949)!important;color:#6B4300}
 .node .bk{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font:700 10px var(--body);letter-spacing:.12em;text-transform:uppercase;background:#F6D77A;color:#4A2E00;padding:2px 7px;border-radius:99px;white-space:nowrap}
+.node.sp-treasure .bk{background:#FFD45A}.node.sp-treasure:not(.done){box-shadow:0 5px 0 #8A6400,0 0 18px rgba(255,212,90,.6)!important;border-color:#FFE9A8!important}
+.node.sp-puzzle .bk{background:#B8A4FF;color:#21124A}.node.sp-puzzle:not(.done){border-color:#D3C6FF!important}
+.node.sp-rescue .bk{background:#7DF5E8;color:#063B37}.node.sp-rescue:not(.done){border-color:#B5FFF6!important}
+#game.treasure{background:radial-gradient(120% 70% at 50% 35%,rgba(255,212,90,.28),transparent 70%)}
 .grainbar{position:relative;z-index:3;display:flex;align-items:center;gap:10px;margin:2px max(14px,env(safe-area-inset-left,0px)) 6px;padding:6px 14px 6px 8px;border-radius:18px;background:linear-gradient(180deg,rgba(6,36,59,.82),rgba(2,18,32,.82));border:1.5px solid rgba(246,215,122,.55);box-shadow:0 0 0 1px rgba(2,18,32,.4),0 6px 18px rgba(2,18,32,.35)}
 .gp{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 12px 2px rgba(255,240,200,.55),inset -3px -4px 6px rgba(120,230,240,.35)}
 .gtx{display:flex;flex-direction:column;line-height:1.05}
@@ -837,6 +841,7 @@ function countProgress(res,prog,goals){
     if(g.sand)prog[i]+=res.sand;
     else if(g.rock)prog[i]+=res.rocks.filter(x=>x.broke).length;
     else if(g.net)prog[i]+=(res.freed||[]).length;
+    else if(g.coin)prog[i]+=res.popped.length+res.created.length*3;
     else if(g.boss)prog[i]+=res.popped.length+(res.freed||[]).length+res.rocks.length;
     else prog[i]+=res.popped.filter(p=>p.cell.k===g.k).length;
   });
@@ -929,6 +934,12 @@ function designLevel(n){
     for(const r of (n%2?[1,4,6,2,5,7,0,3]:[2,4,6,1,5,7,3,0]))if(rowsOk.includes(r)&&!chosen.some(x=>Math.abs(x-r)<2)&&chosen.length<want)chosen.push(r);
     cur=chosen.sort((a,b)=>a-b).map((r,i)=>[r,(i%2?-1:1)*(n%4<2?1:-1)]);
   }
+  /* özel bölümler: her 10 bölümde bir (5, 15, 25...) sırayla hazine, bulmaca, kurtarma */
+  if(d%10===5&&!(D===0&&d<5)){const type=['treasure','puzzle','rescue'][((d-5)/10+D)%3];
+    if(type==='treasure')return {n,diyar:D,d,colors:5,rocks:[],sand:[],goals:[{coin:1,n:60}],seed:n*131+7,nets:[],cur:[],mask:null,shape:'',special:'treasure',breath:true,hard:false};
+    if(type==='puzzle')return {n,diyar:D,d,colors:5,rocks:[],sand:[],goals:[{k:0,n:9}],seed:n*131+7,nets:[],cur:[],mask:full?null:mask,shape:full?'':DSHAPES[(n*5+D*3)%DSHAPES.length],special:'puzzle',breath:false,hard:false};
+    const rn=[];let g=0;const cnt=7+Math.min(4,D+Math.floor(d/40));while(rn.length<cnt&&g++<500){const r=1+Math.floor(R()*6),c=Math.floor(R()*COLS);if(ok(r,c)&&!rn.some(([a,b])=>a===r&&b===c))rn.push([r,c])}
+    return {n,diyar:D,d,colors,rocks:[],sand:[],goals:[{net:1,n:rn.length}],seed:n*131+7,nets:rn,cur:[],mask:full?null:mask,shape:full?'':DSHAPES[(n*5+D*3)%DSHAPES.length],special:'rescue',breath:false,hard:false}}
   /* bekçi bölümü: her diyarın 100. bölümü; tahta sade, hedef bekçinin canı */
   if(d===100){const B=BOSSES[D%BOSSES.length];
     return {n,diyar:D,d,colors,rocks:[],sand:[],goals:[{boss:1,n:B.hp+D*5}],seed:n*131+7,nets:[],cur:[],mask:null,shape:'',boss:B,breath:false,hard:true}}
@@ -936,8 +947,8 @@ function designLevel(n){
 }
 
 /* ===== bölümler: [tür sayısı, kayalar, kum, hedefler, hamle, tohum] — botla ayarlandı ===== */
-const MOVES=[12,11,12,12,12,23,23,18,12,41,15,30,15,12,30,17,16,17,12,20,15,22,26,19,17,17,39,14,18,20,17,25,18,18,17,17,28,18,15,29,20,20,19,38,36,25,19,17,16,23,21,19,17,18,14,19,35,21,25,16,22,22,22,17,18,33,26,20,18,13,21,23,24,38,35,26,19,30,28,21,38,27,45,29,34,33,38,44,32,31,34,45,38,21,40,32,40,37,27,23,15,12,11,21,18,21,13,18,15,16,14,14,22,12,16,15,15,20,15,15,17,23,22,13,20,19,21,15,14,27,15,19,21,14,15,18,17,27,20,23,18,20,25,12,20,21,29,22,13,14,20,26,20,15,31,19,28,16,25,23,22,20,23,45,27,19,16,14,26,14,32,45,43,16,20,40,27,23,22,20,34,43,33,17,24,34,40,44,38,38,30,24,45,45,21,30,26,22,16,26,13,22,16,15,10,19,14,16,13,12,12,10,11,10,10,16,10,12,16,12,12,13,21,15,11,12,14,10,10,12,12,11,15,10,11,25,13,12,13,19,12,10,16,12,18,13,19,10,10,17,26,14,25,23,24,21,37,14,19,13,25,27,22,11,16,23,37,15,37,16,28,21,24,15,40,27,14,18,25,10,26,12,16,15,22,28,36,17,16,15,26,18,25,10,26,34,23,17,22,32];
-const LEVELS=MOVES.map((m,i)=>{const L=designLevel(i+1);L.moves=m;L.dark=false;return L});
+const MOVES=[12,11,12,12,[12,162],23,23,18,12,41,15,30,15,12,[3,18,1],17,16,17,12,20,15,22,26,19,10,17,39,14,18,20,17,25,18,18,[12,146],17,28,18,15,29,20,20,19,38,[3,13,3],25,19,17,16,23,21,19,17,18,10,19,35,21,25,16,22,22,22,17,[12,174],33,26,20,18,13,21,23,24,38,[3,21,4],26,19,30,28,21,38,27,45,29,10,33,38,44,32,31,34,45,38,21,[12,160],32,40,37,27,23,15,12,11,21,[3,12,3],21,13,18,15,16,14,14,22,12,10,15,15,20,15,15,17,23,22,13,[12,156],19,21,15,14,27,15,19,21,14,[3,27,0],18,17,27,20,23,18,20,25,12,10,21,29,22,13,14,20,26,20,15,[12,151],19,28,16,25,23,22,20,23,45,[3,15,2],19,16,14,26,14,32,45,43,16,10,40,27,23,22,20,34,43,33,17,[12,159],34,40,44,38,38,30,24,45,45,[3,17,3],30,26,22,16,26,13,22,16,15,10,19,14,16,13,12,12,10,11,10,[12,151],16,10,12,16,12,12,13,21,15,[3,15,4],12,14,10,10,12,12,11,15,10,10,25,13,12,13,19,12,10,16,12,[12,153],13,19,10,10,17,26,14,25,23,[3,14,3],21,37,14,19,13,25,27,22,11,10,23,37,15,37,16,28,21,24,15,[12,137],27,14,18,25,10,26,12,16,15,[3,24,2],28,36,17,16,15,26,18,25,10,10,34,23,17,22,32];
+const LEVELS=MOVES.map((m,i)=>{const L=designLevel(i+1);if(Array.isArray(m)){L.moves=m[0];if(L.special==='puzzle')L.goals=[{k:m[2],n:m[1]}];else if(L.special==='treasure')L.goals[0].n=m[1]}else L.moves=m;L.dark=false;return L});
 const TIPS={1:"Bir objeyi yanındakiyle yer değiştirmek için kaydır. Aynı türden 3 tanesi yan yana gelince kırılır.",
   2:"Düşen objeler yeni eşleşmeler yaparsa zincirleme kırılır.",
   3:"4'lü eşleşme dalga yapar: bütün satırı ya da sütunu temizler.",
@@ -1163,7 +1174,7 @@ function drawRock(c,hp,x,y,s){const u=s/100,cx=x+s/2,cy=y+s/2;
 function drawNet(c,x,y,s){c.save();c.strokeStyle='rgba(222,190,140,.95)';c.lineWidth=Math.max(1.5,s*.035);c.lineCap='round';
   const p=s*.1,n=4;for(let i=0;i<=n;i++){const f=p+(s-2*p)*i/n;c.beginPath();c.moveTo(x+p,y+f);c.quadraticCurveTo(x+s/2,y+f+s*.04,x+s-p,y+f);c.stroke();c.beginPath();c.moveTo(x+f,y+p);c.quadraticCurveTo(x+f+s*.03,y+s/2,x+f,y+s-p);c.stroke()}
   c.fillStyle='#8A6A3E';for(let i=0;i<=n;i++)for(let j=0;j<=n;j++){c.beginPath();c.arc(x+p+(s-2*p)*i/n,y+p+(s-2*p)*j/n+(j%n?s*.02:0),s*.03,0,7);c.fill()}c.restore()}
-function goalIcon(g){const cv=document.createElement('canvas');cv.width=cv.height=76;const c=cv.getContext('2d');if(g.boss){cv.id='bossCv';drawBoss(c,L.boss.id,38,40,70,0,'angry');return cv}
+function goalIcon(g){const cv=document.createElement('canvas');cv.width=cv.height=76;const c=cv.getContext('2d');if(g.coin){pearl(c,38,38,22);return cv}if(g.boss){cv.id='bossCv';drawBoss(c,L.boss.id,38,40,70,0,'angry');return cv}
   if(g.sand)drawSand(c,1,4,4,68);else if(g.rock)drawRock(c,2,0,0,76);else if(g.net){drawObj(c,3,0,0,76,0);drawNet(c,0,0,76)}else drawObj(c,g.k,0,0,76,0);return cv}
 
 /* ===== oyun durumu ===== */
@@ -1189,31 +1200,36 @@ function startLevel(i,mode){document.body.classList.add('ingame');
   tickLives();if(S.lives<1&&!S.allOpen){openLives();return}
   curIdx=i;curMode=mode||'normal';
   if(curMode==='daily')L=dailyLevel();else{L={...LEVELS[i]};if(curMode==='gold')L.moves=Math.max(8,Math.ceil(L.moves*.72))}
-  ['ovLevel','ovPet','ovFeat'].forEach(id=>show($(id),false));petMood={k:'idle',t:0};show($('petGame'),featOn('pet'));logStart();rng=makeRng(L.seed*1000+((Date.now()/1000)|0)%997+1);
+  ['ovLevel','ovPet','ovFeat'].forEach(id=>show($(id),false));petMood={k:'idle',t:0};show($('petGame'),featOn('pet'));logStart();rng=L.special==='puzzle'?makeRng(L.seed*1000+1):makeRng(L.seed*1000+((Date.now()/1000)|0)%997+1);
   G=newBoard(L,rng);
-  if(petLv()>=3&&rng()<.5){const cs=[];for(let r=1;r<6;r++)for(let c=1;c<6;c++)if(isP(G.b[r][c])&&!G.b[r][c].net)cs.push([r,c]);if(cs.length){const [r,c]=cs[Math.floor(rng()*cs.length)];G.b[r][c].sp='d'}}
-  if(S.boostB>0&&curMode==='normal'){const cs=[];for(let r=2;r<6;r++)for(let c=1;c<6;c++)if(isP(G.b[r][c])&&!G.b[r][c].sp&&!G.b[r][c].net)cs.push([r,c]);if(cs.length){const [r,c]=cs[Math.floor(rng()*cs.length)];G.b[r][c].sp='b';S.boostB--;saveSoon()}}
-  if(S.st[3]){const cs=[];for(let r=1;r<5;r++)for(let c=1;c<6;c++)if(isP(G.b[r][c]))cs.push([r,c]);const [r,c]=cs[Math.floor(rng()*cs.length)];G.b[r][c].sp=rng()<.5?'h':'v'}
+  const puz=L.special==='puzzle';if(puz)preSel.clear();
+  if(!puz&&petLv()>=3&&rng()<.5){const cs=[];for(let r=1;r<6;r++)for(let c=1;c<6;c++)if(isP(G.b[r][c])&&!G.b[r][c].net)cs.push([r,c]);if(cs.length){const [r,c]=cs[Math.floor(rng()*cs.length)];G.b[r][c].sp='d'}}
+  if(!puz&&S.boostB>0&&curMode==='normal'){const cs=[];for(let r=2;r<6;r++)for(let c=1;c<6;c++)if(isP(G.b[r][c])&&!G.b[r][c].sp&&!G.b[r][c].net)cs.push([r,c]);if(cs.length){const [r,c]=cs[Math.floor(rng()*cs.length)];G.b[r][c].sp='b';S.boostB--;saveSoon()}}
+  if(!puz&&S.st[3]){const cs=[];for(let r=1;r<5;r++)for(let c=1;c<6;c++)if(isP(G.b[r][c]))cs.push([r,c]);const [r,c]=cs[Math.floor(rng()*cs.length)];G.b[r][c].sp=rng()<.5?'h':'v'}
   /* giriş: objeler yüzeyden sallanarak batar */
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const x=G.b[r][c];if(isP(x))x.fy=r-ROWS-1-((c*3+r)%5)*.25}
   introT0=performance.now();
   prog=L.goals.map(()=>0);moves=L.moves;toolSel=null;applyBoosts();used=0;over=false;freeUsed=false;phase='idle';sel=null;drag=null;hintMove=null;chain=0;
   exits=[];scenes=[];parts=[];floats=[];ripples=[];flyers=[];lights=[];darkK=0;idleT=0;fallHold=.15;dim=0;MOOD=0;finale=null;
   drifted=false;
+  $('game').classList.toggle('treasure',L.special==='treasure');
   $('lvlN').textContent=curMode==='daily'?'Günlük':L.n;$('movesBox').classList.toggle('goldm',curMode==='gold');
-  $('tip').textContent=curMode==='daily'?'Günlük Dalış: bugünün özel bölümü. Bitir, serini sürdür! '+goalText():curMode==='gold'?'Altın İnci: aynı hedef, daha az hamle. '+goalText():TIPS[L.n]&&!S.seen[L.n]?TIPS[L.n]:goalText();
+  $('tip').textContent=curMode==='daily'?'Günlük Dalış: bugünün özel bölümü. Bitir, serini sürdür! '+goalText():curMode==='gold'?'Altın İnci: aynı hedef, daha az hamle. '+goalText():L.special||L.boss?goalText():TIPS[L.n]&&!S.seen[L.n]?TIPS[L.n]:goalText();
   renderGoals(true);updMoves();renderTools();
   show($('home'),false);show($('game'),true);['ovWin','ovLose','ovQuit'].forEach(id=>show($(id),false));
   sizeBoard();blub(0);setTimeout(()=>blub(3),120);
   cancelAnimationFrame(raf);lastT=performance.now();raf=requestAnimationFrame(frame);musMuffle(false);musicStart('game')
 }
-function goalText(){if(L.boss)return `Bekçi: ${L.boss.name}. Eşleştirdiğin her canlı ona vurur; her ${L.boss.every} hamlede bir saldırır.`;return 'Hedef: '+L.goals.map(g=>g.net?`${g.n} canlıyı ağdan kurtar`:g.sand?`${g.n} kum temizle`:g.rock?`${g.n} kaya kır`:`${g.n} ${NAMES[g.k].toLowerCase()} topla`).join(', ')+'.'}
+function goalText(){if(L.special==='treasure')return `Hazine bölümü: ${L.moves} hamlede topladığın her canlı bir inci. Kaybetmek yok, ne toplarsan senin!`;
+  if(L.special==='puzzle')return `Bulmaca: tahta hep aynı, şans yok. ${L.moves} hamlede ${L.goals[0].n} ${NAMES[L.goals[0].k].toLowerCase()} topla. Kaybedersen can gitmez.`;
+  if(L.special==='rescue')return `Kurtarma: ağlara takılan ${L.goals[0].n} yavruyu kurtar! Kurtardıkların ansiklopediye sayılır.`;
+  if(L.boss)return `Bekçi: ${L.boss.name}. Eşleştirdiğin her canlı ona vurur; her ${L.boss.every} hamlede bir saldırır.`;return 'Hedef: '+L.goals.map(g=>g.net?`${g.n} canlıyı ağdan kurtar`:g.sand?`${g.n} kum temizle`:g.rock?`${g.n} kaya kır`:`${g.n} ${NAMES[g.k].toLowerCase()} topla`).join(', ')+'.'}
 function renderGoals(build){const box=$('goals');
   if(build&&L.boss){box.innerHTML='';const g=L.goals[0],d=document.createElement('div');d.className='goal bossg';d.id='g0';d.appendChild(goalIcon(g));
     d.insertAdjacentHTML('beforeend',`<div class="bossinfo"><span class="bn">${L.boss.name}</span><div class="hpbar"><i id="bossHp"></i></div><span class="bcd" id="bossCd"></span></div><b hidden></b>`);box.appendChild(d);bossCd=L.boss.every;bossUsed=0}
   if(L.boss){const g=L.goals[0],left=Math.max(0,g.n-prog[0]);$('bossHp').style.width=(left/g.n*100)+'%';$('bossCd').textContent=left?`Saldırıya ${bossCd} hamle`:'Yenildi!';if(!build&&left<bossLastHp){bossHitT=.25}bossLastHp=left;return}
   if(build){box.innerHTML='';L.goals.forEach((g,i)=>{const d=document.createElement('div');d.className='goal';d.id='g'+i;d.appendChild(goalIcon(g));d.appendChild(document.createElement('b'));box.appendChild(d)})}
-  L.goals.forEach((g,i)=>{const d=$('g'+i),left=Math.max(0,g.n-prog[i]),b=d.querySelector('b'),txt=left?String(left):'✓';
+  L.goals.forEach((g,i)=>{const d=$('g'+i),left=Math.max(0,g.n-prog[i]),b=d.querySelector('b'),txt=g.coin?String(prog[i]):left?String(left):'✓';
     if(b.textContent!==txt&&!build){b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}b.textContent=txt;d.classList.toggle('ok',!left)})}
 function updMoves(){$('movesN').textContent=moves;$('movesBox').classList.toggle('low',moves<=5&&!over)}
 
@@ -1315,7 +1331,8 @@ function step(){
     else{phase='idle';endCheck()}}
 }
 function endCheck(){
-  if(goalsDone(prog,L.goals)){win();return}
+  if(L.special==='treasure'){if(moves<=0){win();return}}
+  else if(goalsDone(prog,L.goals)){win();return}
   if(L.boss&&used>bossUsed){bossUsed=used;bossCd--;if(bossCd<=0){bossCd=L.boss.every;renderGoals(false);bossAttack();return}renderGoals(false)}
   if(moves<=0){lose();return}
   if(!hasMove(G.b)){shuffle(G,rng);for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const x=G.b[r][c];if(isP(x)){x.fy=r-ROWS-1-((c*3+r)%5)*.3}}fallHold=.1;
@@ -1533,12 +1550,13 @@ function runFinale(dt){
 function win(){
   logEnd('w');
   over=true;
-  const ratio=moves/L.moves,st=ratio>=.3?3:ratio>=.12?2:1;
+  const ratio=moves/L.moves;let st=ratio>=.3?3:ratio>=.12?2:1;if(L.special==='treasure'){const g=L.goals[0];st=prog[0]>=g.n?3:prog[0]>=g.n*.6?2:1}if(L.special==='puzzle')st=3;
   const prev=totalStars();let coins=0,extra='';
   const firstWin=curMode!=='daily'&&!S.stars[L.n-1];
   if(curMode==='daily'){if(!dailyDone()){const r=dailyReward();coins=r.coins;extra=`Seri: ${r.streak} gün`}else extra='Bugünün ödülünü zaten aldın'}
   else{const first=!S.stars[L.n-1];coins=30+moves*5+(st===3?20:0);if(!first)coins=Math.round(coins/2);
     if(curMode==='gold'){if(!(S.gold||[])[L.n-1]){S.gold=S.gold||[];S.gold[L.n-1]=1;coins+=60;extra='Altın inci kazandın!'}else extra='Altın inci zaten sende'}
+    if(L.special==='treasure')coins=prog[0];
     if(petLv()>=2)coins=Math.round(coins*1.1);
     S.stars[L.n-1]=Math.max(S.stars[L.n-1]||0,st);S.coins+=coins}
   save();petXP(curMode==='normal'?1:2);petEvent('cheer',5);
@@ -1573,7 +1591,7 @@ function lose(){
 function moreMoves(){moves+=5;over=false;MOOD=0;musMuffle(false);petMood={k:'idle',t:0};updMoves();show($('ovLose'),false);tone(660,.15,'sine')}
 $('loseMore').onclick=()=>{if(S.coins<120)return;S.coins-=120;save();moreMoves()};
 $('loseFree').onclick=()=>{freeUsed=true;moreMoves()};
-$('loseRetry').onclick=()=>{loseLife();show($('ovLose'),false);if(S.lives<1){toMap();openLives()}else startLevel(curIdx,curMode)};
+$('loseRetry').onclick=()=>{if(L.special!=='puzzle')loseLife();show($('ovLose'),false);if(S.lives<1){toMap();openLives()}else startLevel(curIdx,curMode)};
 /* harita: önce sor; can arka planda düşer */
 let quitFrom='game';
 $('loseMap').onclick=()=>{quitFrom='lose';show($('ovLose'),false);$('quitTitle').textContent='Haritaya dönülsün mü?';$('quitText').textContent='Bu bölümü haritadan istediğin zaman tekrar oynayabilirsin.';$('quitStay').textContent='Vazgeç';show($('ovQuit'),true)};
@@ -1581,7 +1599,7 @@ $('winNext').onclick=()=>{show($('ovWin'),false);openLevel(curIdx+1)};
 $('winMap').onclick=()=>{show($('ovWin'),false);toMap()};
 $('quitBtn').onclick=()=>{if(over)return;if(used===0){toMap();return}quitFrom='game';$('quitTitle').textContent='Bölümden çıkılsın mı?';$('quitText').textContent='Bu bölümdeki ilerlemen kaybolur.';$('quitStay').textContent='Oynamaya devam et';show($('ovQuit'),true)};
 $('quitStay').onclick=()=>{show($('ovQuit'),false);if(quitFrom==='lose')show($('ovLose'),true)};
-$('quitGo').onclick=()=>{if(quitFrom==='game')logEnd('q');loseLife();show($('ovQuit'),false);toMap()};
+$('quitGo').onclick=()=>{if(quitFrom==='game')logEnd('q');if(!(quitFrom==='game'&&L&&L.special))loseLife();show($('ovQuit'),false);toMap()};
 
 /* ===== harita: dipten yüzeye ===== */
 const GAP=96;
@@ -1863,6 +1881,7 @@ function renderMap(){
     if(i===cur&&!st){b.classList.add('cur');if(!totalStars()){const co=document.createElement('div');co.className='callout';co.textContent='Buradan başla';co.style.left=p.x+'px';co.style.top=p.y+'px';m.appendChild(co)}}
     if(i>cur&&!S.allOpen){b.classList.add('locked');b.setAttribute('aria-label',`Bölüm ${i+1}, kilitli`)}else{b.setAttribute('aria-label',`Bölüm ${i+1}, ${st} yıldız`);b.onclick=()=>openLevel(i)}
     if((S.gold||[])[i])b.classList.add('gold');
+    if(LEVELS[i].special){const sl={treasure:'Hazine',puzzle:'Bulmaca',rescue:'Kurtarma'}[LEVELS[i].special];b.classList.add('sp-'+LEVELS[i].special);b.insertAdjacentHTML('beforeend',`<span class="bk">${sl}</span>`)}
     if(LEVELS[i].boss){b.classList.add('boss');b.insertAdjacentHTML('beforeend','<span class="bk">Bekçi</span>')}
     m.appendChild(b)}
   applyZoneLook();setTimeout(checkZones,500);
@@ -1903,10 +1922,10 @@ $('rCopy').onclick=()=>{const t=$('rText');try{navigator.clipboard.writeText(t.v
 function renderPlayBar(){const cur=unlocked();$('mapPlay').textContent=`Oyna · Bölüm ${cur+1}`;$('mapPlay').onclick=()=>openLevel(cur);
   const dn=!!dailyDone(),sk=dailyStreak();$('dailyBtn').classList.toggle('done',dn);$('dailyT').textContent=dn?'Günlük ✓':'Günlük Dalış';$('dailyS').textContent=sk?`Seri ${sk} gün`:'Yeni!'}
 function openLevel(i){const gOk=featOn('gold')&&!!S.stars[i];show($('lvGold'),gOk);show($('lvGoldNote'),gOk);const lv=LEVELS[i],st=S.stars[i]||0,g=(S.gold||[])[i];
-  $('lvTitle').textContent='Bölüm '+(i+1)+(lv.boss?' · Bekçi':'');$('lvStars').innerHTML=[1,2,3].map(k=>`<span class="${k<=st?'':'off'}" style="transform:none;animation:none">★</span>`).join('');
+  $('lvTitle').textContent='Bölüm '+(i+1)+(lv.boss?' · Bekçi':lv.special?' · '+{treasure:'Hazine',puzzle:'Bulmaca',rescue:'Kurtarma'}[lv.special]:'');show($('lvBoosts'),lv.special!=='puzzle');$('lvStars').innerHTML=[1,2,3].map(k=>`<span class="${k<=st?'':'off'}" style="transform:none;animation:none">★</span>`).join('');
   $('lvGold').textContent=(g?'Altın İnci ✓ · ':'Altın İnci · ')+Math.max(8,Math.ceil(lv.moves*.72))+' hamle';
   $('lvGoldNote').textContent=g?'Bu bölümün altın incisi sende. İstersen yine oynayabilirsin.':'Aynı hedef, daha az hamle. Kazanırsan bölüme altın inci takılır ve 60 inci kazanırsın.';
-  preSel.clear();renderBoosts();
+  preSel.clear();renderBoosts();show($('lvBoosts'),lv.special!=='puzzle');
   $('lvPlay').onclick=()=>startLevel(i);$('lvGold').onclick=()=>startLevel(i,'gold');show($('ovLevel'),true)}
 $('lvClose').onclick=()=>show($('ovLevel'),false);
 $('dailyBtn').onclick=()=>startLevel(0,'daily');

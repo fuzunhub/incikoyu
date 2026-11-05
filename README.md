@@ -22,6 +22,7 @@ Fuzun Games'in su altı eşleştirme bulmacası. Büyük İnci 10.000 taneye bö
 - **Bölgeler:** 20 bölümlük her bölge solgun başlar; bitince renklenir ve bölge sandığı açılır (inci, can, kabarcık bombası).
 - **Dede Kabuk'un hikayesi:** ilk girişte açılış hikayesi; Ayarlar'dan tekrar izlenebilir.
 - **Bekçiler:** her diyarın 100. bölümünde canı olan bir bekçi (Kum Yengeci, Düğümcü Yengeç, Hızlı Uskumru Sürüsü). Eşleştirdiğin her canlı ona vurur; birkaç hamlede bir saldırır (kaya atar, ağ atar, satırları kaydırır). Yenilince kurtulur.
+- **Özel bölümler:** her 10 bölümde bir sırayla: *Hazine* (kaybetmek yok, topladığın her canlı bir inci), *Bulmaca* (tahta hep aynı, 3 hamlede çöz, can gitmez), *Kurtarma* (ağdaki yavruları kurtar).
 - **Özel objeler:** dalga (4'lü), kabarcık bombası (L/T), yunus (2×2), inci girdabı (5'li).
 - **İnci harcama:** bölüm öncesi güçlendiriciler (dalga, kabarcık, yunus, girdap, +3 hamle) ve oyun içi aletler (çekiç, satır, sütun).
 - **Yavru balık:** besle, büyüt; büyüdükçe can, inci ve yunus avantajı verir. Adını sen koyarsın.
@@ -30,7 +31,7 @@ Fuzun Games'in su altı eşleştirme bulmacası. Büyük İnci 10.000 taneye bö
 
 ## Yol haritası
 
-Oyun 10.000 bölümlük bir destan olarak tasarlandı: 10 deniz, her denizde 10 diyar. Yeni diyarlar önce haftada bir, sonra ayda bir eklenir. Sıradaki işler: özel bölümler (hazine, bulmaca, kurtarma), İnci Sarayı ve Minik'in 10 aşamalı büyümesi.
+Oyun 10.000 bölümlük bir destan olarak tasarlandı: 10 deniz, her denizde 10 diyar. Yeni diyarlar önce haftada bir, sonra ayda bir eklenir. Sıradaki işler: İnci Sarayı ve Minik'in 10 aşamalı büyümesi.
 
 ## Bu depo
 
@@ -38,6 +39,7 @@ Bu depo oyunun yayındaki sürümünü tutar (`index.html`, `manifest.webmanifes
 
 ## Son güncellemeler
 
+- Özel bölümler: hazine, bulmaca ve kurtarma
 - Bekçi savaşları: 100, 200 ve 300. bölümlerde bekçiler, saldırıları ve kurtarma sahnesi
 - 300 bölüm ve diyar sayfaları; diyar kapıları, "yakında" duvarı
 - İncilerle güçlendirici ve oyun içi aletler
