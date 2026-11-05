@@ -20,7 +20,9 @@ html,body{overscroll-behavior:none;-webkit-touch-callout:none}
 .gfoot{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
 .tbottom{bottom:calc(31% + env(safe-area-inset-bottom,0px))}
 /* iOS tam ekran: ekranlar tüm cihazı kaplar, üst boşluğu (saat/çentik) kendileri bırakır */
-.screen{position:fixed;top:0;left:0;right:0;bottom:0;padding-top:env(safe-area-inset-top,0px)}
+/* iPhone: ekranlar ekranın en altına kadar uzansın (iOS tam ekranda pencere yüksekliğini kısa bildiriyor) */
+.screen{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:auto!important;height:100vh!important;height:max(100vh,100lvh)!important;padding-top:env(safe-area-inset-top,0px)}
+html,body{min-height:100vh}
 html,body{height:100%}</style>
 </head>
 <body>
