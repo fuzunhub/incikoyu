@@ -78,6 +78,23 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 .node{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;padding:0;font-size:24px;display:grid;place-items:center;
   background:radial-gradient(circle at 35% 30%,#2C86B0,var(--panel));border:3px solid #3D9CC6;box-shadow:0 5px 0 #021220}
 .map canvas.mapdeco{position:absolute;left:0;pointer-events:none}
+.grainbar{position:relative;z-index:3;display:flex;align-items:center;gap:10px;margin:2px max(14px,env(safe-area-inset-left,0px)) 6px;padding:6px 14px 6px 8px;border-radius:18px;background:linear-gradient(180deg,rgba(6,36,59,.82),rgba(2,18,32,.82));border:1.5px solid rgba(246,215,122,.55);box-shadow:0 0 0 1px rgba(2,18,32,.4),0 6px 18px rgba(2,18,32,.35)}
+.gp{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 12px 2px rgba(255,240,200,.55),inset -3px -4px 6px rgba(120,230,240,.35)}
+.gtx{display:flex;flex-direction:column;line-height:1.05}
+.gtx small,.gzone small{font:700 10.5px var(--body);letter-spacing:.14em;text-transform:uppercase;color:#F6D77A}
+.gtx b{font-family:var(--display);font-weight:600;font-size:21px;font-variant-numeric:tabular-nums}
+.gtx i{font-style:normal;font-size:14px;color:var(--muted)}
+.gzone{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.gzone small{letter-spacing:.06em;text-transform:none;font-size:12px;color:#D6F6FF}
+.gbar{width:100%;max-width:150px;height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+.gbar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#E3A93A,#FFF1C2);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.grainbar.pop .gp{animation:gpearl .9s ease-out}
+.grainbar.pop #grainN{display:inline-block;animation:gnum .9s ease-out}
+@keyframes gpearl{30%{transform:scale(1.45);box-shadow:0 0 26px 10px rgba(255,240,200,.9)}}
+@keyframes gnum{30%{transform:scale(1.35);color:#FFF1C2}}
+.gfly{position:fixed;z-index:30;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 22px 8px rgba(255,240,200,.75);transition:transform .85s cubic-bezier(.5,0,.3,1),opacity .2s .75s}
+.wingrain{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 0;font-family:var(--display);font-weight:600;font-size:17px;color:#F6D77A}
+.wingrain .gp{width:24px;height:24px}
 .node.z0{background:radial-gradient(circle at 35% 30%,#7CF0C8,#0E8C8A);border-color:#9CF6DA;box-shadow:0 5px 0 #075B5A}
 .node.z1{background:radial-gradient(circle at 35% 30%,#FFD9A0,#D9792F);border-color:#FFE3B8;box-shadow:0 5px 0 #8A4515;color:#fff}
 .node.z2{background:radial-gradient(circle at 35% 30%,#8BF3FF,#1678C8);border-color:#B5F8FF;box-shadow:0 5px 0 #0A3F78}
@@ -351,6 +368,7 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
     <button class="iconbtn" id="homeLogo" type="button" aria-label="Giriş ekranı">⌂</button>
     <button class="iconbtn" id="setBtn" type="button" aria-label="Ayarlar">⚙</button>
   </div>
+  <div class="grainbar" id="grainBar" aria-live="polite"><span class="gp" aria-hidden="true"></span><div class="gtx"><small>İnci Tanesi</small><b><span id="grainN">0</span><i> / 10.000</i></b></div><div class="gzone"><small id="grainZone">Bölge 1</small><div class="gbar"><i id="grainFill"></i></div></div></div>
   <div class="mapwrap" id="mapView"><div class="map" id="map"></div></div>
   <div class="reef" id="reefView" hidden>
     <h2>Resifi canlandır</h2>
@@ -390,6 +408,7 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <h2 id="winTitle">Bölüm tamam</h2>
   <p id="winText"></p>
   <div class="reward"><span class="ic coin" style="width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:14px">●</span><span id="winCoins">+0</span></div>
+  <p class="wingrain" id="winGrain" hidden><span class="gp" aria-hidden="true"></span><span id="winGrainT"></span></p>
   <p id="winSt" hidden style="color:var(--aqua)"></p>
   <button class="cta" id="winNext" type="button">Sonraki bölüm</button>
   <button id="winMap" type="button">Haritaya dön</button>
@@ -1314,6 +1333,7 @@ function win(){
   over=true;
   const ratio=moves/L.moves,st=ratio>=.3?3:ratio>=.12?2:1;
   const prev=totalStars();let coins=0,extra='';
+  const firstWin=curMode!=='daily'&&!S.stars[L.n-1];
   if(curMode==='daily'){if(!dailyDone()){const r=dailyReward();coins=r.coins;extra=`Seri: ${r.streak} gün`}else extra='Bugünün ödülünü zaten aldın'}
   else{const first=!S.stars[L.n-1];coins=30+moves*5+(st===3?20:0);if(!first)coins=Math.round(coins/2);
     if(curMode==='gold'){if(!(S.gold||[])[L.n-1]){S.gold=S.gold||[];S.gold[L.n-1]=1;coins+=60;extra='Altın inci kazandın!'}else extra='Altın inci zaten sende'}
@@ -1331,6 +1351,7 @@ function win(){
     const now=totalStars(),ns=ST.findIndex((s,i)=>!S.st[i]&&prev<s[1]&&now>=s[1]);
     const nc=(S.cards||[]).length-(S.cardSeen||0);
     if(curMode==='daily')$('winStars').innerHTML='<span>★</span><span>★</span><span>★</span>';
+    show($('winGrain'),firstWin);if(firstWin)$('winGrainT').textContent=`+1 İnci Tanesi · ${doneN().toLocaleString('tr-TR')} / 10.000`;
     show($('winSt'),ns>=0||nc>0);$('winSt').textContent=[ns>=0?`Resifte yeni istasyon açıldı: ${ST[ns][0]}`:'',nc>0?`Ansiklopedide ${nc} yeni kart açıldı`:''].filter(Boolean).join(' · ');
     show($('winNext'),curMode==='normal'&&L.n<LEVELS.length);show($('ovWin'),true)}};
 }
@@ -1430,8 +1451,16 @@ function mapAnimDraw(T){const v=$('mapView'),m=$('map');if(!v||!decoCache||!deco
     if(o.k==='fish'){const dir=o.r<.5?1:-1,span=W+80,x=((o.x+dir*T*(14+o.r*10))%span+span)%span-40,y=o.y+Math.sin(T*.8+o.r*7)*8;
       if(y<top-40||y>top+vh+40)continue;drawDeco(c,{...o,x,y},T)}
     else{if(o.y<top-60||o.y>top+vh+20)continue;drawDeco(c,o,T)}}}
+/* İnci Tanesi sayacı: her bitirilen bölüm bir tane; bölge = 20 bölüm */
+function renderGrain(){const n=doneN(),z=Math.floor(Math.min(unlocked(),LEVELS.length-1)/20),inZ=S.stars.slice(z*20,z*20+20).filter(Boolean).length;
+  $('grainN').textContent=n.toLocaleString('tr-TR');$('grainZone').textContent=`Bölge ${z+1} · ${inZ}/20`;$('grainFill').style.width=(inZ/20*100)+'%';
+  const seen=S.grainSeen||0;if(n>seen){S.grainSeen=n;saveSoon();setTimeout(()=>grainFly(),350)}}
+function grainFly(){const bar=$('grainBar');if(!bar||$('home').hidden)return;const t=bar.querySelector('.gp').getBoundingClientRect();
+  const f=document.createElement('div');f.className='gfly';f.style.left=(innerWidth/2)+'px';f.style.top=(innerHeight*.55)+'px';document.body.appendChild(f);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transform=`translate(${t.left+t.width/2-innerWidth/2}px,${t.top+t.height/2-innerHeight*.55}px) scale(.85)`;f.style.opacity='0'}));
+  setTimeout(()=>{f.remove();bar.classList.remove('pop');void bar.offsetWidth;bar.classList.add('pop');try{chime(4);chime(7)}catch(e){}},820)}
 function renderMap(){
-  const m=$('map'),H=(LEVELS.length+1)*GAP+50,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
+  renderGrain();const m=$('map'),H=(LEVELS.length+1)*GAP+50,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
   const cur=unlocked();let d='';for(let i=0;i<LEVELS.length;i++){const p=nodePos(i);d+=(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)}
   try{mapDeco(W,H).forEach(cv=>m.appendChild(cv))}catch(e){}
   for(const [i0,i1,name,cls] of [[0,19,'Mercan Lagünü · 1–20','zl'],[20,29,'Balıkçı Ağları · 21–30','zn'],[30,39,'Akıntı Boğazı · 31–40','zc'],[40,49,'Mercan Labirenti · 41–50','zm'],[50,59,'Batık Şehir · 51–60','zs']]){const a=nodePos(i1),b=nodePos(i0);m.insertAdjacentHTML('beforeend',`<div class="zone ${cls}" style="top:${a.y-60}px;height:${b.y-a.y+120}px"><span>${name}</span></div>`)}
