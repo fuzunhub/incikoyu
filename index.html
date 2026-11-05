@@ -126,6 +126,28 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 .tool.on{border-color:#F6D77A;background:rgba(246,215,122,.22);animation:toolp 1s ease-in-out infinite}
 .tool:disabled{opacity:.4}
 @keyframes toolp{50%{box-shadow:0 0 0 5px rgba(246,215,122,.25),0 3px 0 rgba(2,18,32,.6)}}
+.dhead{position:sticky;top:6px;z-index:6;height:0;display:flex;justify-content:center;align-items:flex-start;pointer-events:none}
+.dhead span{display:flex;flex-direction:column;align-items:center;padding:4px 14px 5px;border-radius:14px;background:rgba(2,18,32,.72);border:1.5px solid rgba(246,215,122,.5);font-family:var(--display);font-weight:600;font-size:15px;color:#FFF1C2;white-space:nowrap;line-height:1.1}
+.dhead small{font:700 9.5px var(--body);letter-spacing:.16em;text-transform:uppercase;color:#D6F6FF}
+.gate{position:absolute;left:50%;transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 18px;border-radius:18px;background:linear-gradient(180deg,#FFE9A8,#E9B949);color:#4A2E00;border:2px solid #FFF1C2;box-shadow:0 5px 0 #8A6400,0 0 24px rgba(255,220,140,.45);min-height:0;margin-top:44px}
+.gate small{font:700 11px var(--body);letter-spacing:.06em;opacity:.8}
+.gate b{font-family:var(--display);font-weight:600;font-size:17px;white-space:nowrap}
+.gate.lockd{background:rgba(2,18,32,.75);color:var(--muted);border-color:rgba(255,255,255,.2);box-shadow:none}
+.gate.back{transform:translate(-50%,-100%);margin-top:0;background:rgba(2,18,32,.75);color:#D6F6FF;border-color:rgba(125,200,230,.5);box-shadow:0 4px 0 rgba(2,18,32,.7)}
+.soon{position:absolute;left:50%;top:58px;transform:translateX(-50%);z-index:4;width:min(86%,330px);text-align:center;padding:14px 16px;border-radius:20px;background:rgba(2,18,32,.8);border:2px dashed rgba(246,215,122,.7)}
+.soon small{font:700 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:#F6D77A}
+.soon b{display:block;font-family:var(--display);font-weight:600;font-size:20px;color:#FFF1C2;margin:2px 0 4px}
+.soon p{margin:0;font-size:13px;color:#D6F6FF;line-height:1.4}
+.zone.zc0 span{background:#18B89ECC}.zone.zc1 span{background:#E8893ACC}.zone.zc2 span{background:#1FA9D6CC}.zone.zc3 span{background:#E85A80CC}.zone.zc4 span{background:#8A5CE6CC}
+.zone.zc0,.zone.zc1,.zone.zc2,.zone.zc3,.zone.zc4{background:none}
+#mapView.pgdown{animation:pgd .7s ease-out}#mapView.pgup{animation:pgu .7s ease-out}
+@keyframes pgd{0%{opacity:0;transform:translateY(-40px)}100%{opacity:1}}
+@keyframes pgu{0%{opacity:0;transform:translateY(40px)}100%{opacity:1}}
+.dbanner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 26px;border-radius:24px;background:rgba(2,18,32,.85);border:2px solid #F6D77A;animation:zc 3.2s ease both;pointer-events:none;white-space:nowrap}
+.dbanner small{font:700 12px var(--body);letter-spacing:.18em;text-transform:uppercase;color:#D6F6FF}
+.dbanner b{font-family:var(--display);font-weight:600;font-size:28px;color:#FFF1C2}
+.dbanner i{font-style:normal;font-size:13px;color:#F6D77A}
+#mapPlay{white-space:nowrap;font-size:clamp(17px,5.2vw,22px)}
 .grainbar{position:relative;z-index:3;display:flex;align-items:center;gap:10px;margin:2px max(14px,env(safe-area-inset-left,0px)) 6px;padding:6px 14px 6px 8px;border-radius:18px;background:linear-gradient(180deg,rgba(6,36,59,.82),rgba(2,18,32,.82));border:1.5px solid rgba(246,215,122,.55);box-shadow:0 0 0 1px rgba(2,18,32,.4),0 6px 18px rgba(2,18,32,.35)}
 .gp{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 12px 2px rgba(255,240,200,.55),inset -3px -4px 6px rgba(120,230,240,.35)}
 .gtx{display:flex;flex-direction:column;line-height:1.05}
@@ -417,7 +439,7 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
     <button class="iconbtn" id="setBtn" type="button" aria-label="Ayarlar">⚙</button>
   </div>
   <div class="grainbar" id="grainBar" aria-live="polite"><span class="gp" aria-hidden="true"></span><div class="gtx"><small>İnci Tanesi</small><b><span id="grainN">0</span><i> / 10.000</i></b></div><div class="gzone"><small id="grainZone">Bölge 1</small><div class="gbar"><i id="grainFill"></i></div></div></div>
-  <div class="mapwrap" id="mapView"><div class="map" id="map"></div></div>
+  <div class="mapwrap" id="mapView"><div class="dhead" id="dHead"></div><div class="map" id="map"></div></div>
   <div class="reef" id="reefView" hidden>
     <h2>Resifi canlandır</h2>
     <p>Yıldız topladıkça yeni istasyonlar açılır. İncilerle onardığın her istasyon kalıcı bir avantaj verir.</p>
@@ -810,8 +832,93 @@ function countProgress(res,prog,goals){
 }
 const goalsDone=(prog,goals)=>goals.every((g,i)=>prog[i]>=g.n);
 
+/* ===== İnciland bölüm tasarımcısı: her bölüm numarasından aynı bölüm doğar ===== */
+/* Diyar = 100 bölüm. 1: Kumsal Sığlığı (kum, kaya, özel objeler) · 2: Balıkçı Ağları (ağlar) · 3: Akıntı Kanalları (akıntı, şekiller) */
+const DIYAR=[
+ {name:'Kumsal Sığlığı',bekci:'Kum Yengeci'},
+ {name:'Balıkçı Ağları',bekci:'Düğümcü Yengeç'},
+ {name:'Akıntı Kanalları',bekci:'Hızlı Uskumru Sürüsü'},
+ {name:'İstiridye Yatağı',bekci:'Dev İstiridye'},
+ {name:'Yavru Yuvası',bekci:'Huysuz Kirpi Balığı'},
+ {name:'Kabarcık Bahçesi',bekci:'Kabarcık Ejderi'},
+ {name:'Mürekkep Koyu',bekci:'Mürekkep Yavrusu'},
+ {name:'Gelgit Havuzları',bekci:'Gelgit Yengeçleri'},
+ {name:'Kayıp Hazineler',bekci:'Pas Kaptan'},
+ {name:"Örgü Ana'nın İni",bekci:'Örgü Ana'}];
+const DMASK={
+ full:['#######','#######','#######','#######','#######','#######','#######','#######'],
+ kalp:['.##.##.','#######','#######','#######','.#####.','.#####.','..###..','...#...'],
+ kumsaati:['#######','.#####.','..###..','..###..','..###..','..###..','.#####.','#######'],
+ arti:['..###..','..###..','#######','#######','#######','#######','..###..','..###..'],
+ kopru:['###.###','###.###','###.###','#######','#######','###.###','###.###','###.###'],
+ kale:['#.#.#.#','#######','#######','#######','#######','#######','#######','#######'],
+ halka:['#######','#######','##...##','##...##','##...##','##...##','#######','#######'],
+ ok:['..###..','..###..','..###..','..###..','#######','.#####.','..###..','...#...'],
+ elmas:['...#...','..###..','.#####.','#######','#######','.#####.','..###..','...#...'],
+ basamak:['#......','##.....','###....','####...','#####..','######.','#######','#######'],
+ kuleler:['##...##','##...##','###.###','###.###','#######','#######','#######','#######'],
+ kaplumbaga:['..###..','.#####.','#######','#######','#######','.#####.','.##.##.','.##.##.'],
+ pencere:['###.###','###.###','###.###','.......','###.###','###.###','###.###','###.###'],
+ zikzak:['####...','####...','.####..','..####.','...####','..####.','.####..','####...'],
+ kupa:['##...##','##...##','##...##','##...##','#######','#######','#######','#######'],
+ te:['#######','#######','#######','..###..','..###..','..###..','..###..','..###..'],
+ balik:['..###..','.#####.','######.','#######','#######','######.','.#####.','..###..'],
+ kemer:['.#####.','#######','#######','##...##','##...##','##...##','##...##','##...##']};
+const DSHAPES=['kalp','kopru','ok','kale','kumsaati','arti','kupa','halka','te','kuleler','balik','elmas','kaplumbaga','pencere','basamak','zikzak','kemer'];
+function designLevel(n){
+  const D=Math.floor((n-1)/100),d=(n-1)%100+1,R=makeRng(n*7919+101);
+  const breath=d%5===1&&d>5,hard=d%5===4;
+  const colors=(D===0&&d>=81)||(D===1&&d>=71)||(D===2&&d>=51)||D>=3?6:5;
+  const full=(D===0&&d<=5)||d%7===0||breath&&d%10===1;
+  const mask=full?DMASK.full:DMASK[DSHAPES[(n*5+D*3)%DSHAPES.length]];
+  const ok=(r,c)=>mask[r][c]==='#';
+  const rocks=[],sand=[];
+  /* kum: diyar 1'de 6'dan, diyar 2'de 31'den, diyar 3'te 21'den */
+  const sandOn=(D===0&&d>=6)||(D===1&&d>=31)||(D===2&&d>=21)||D>=3;
+  if(sandOn&&n%3!==2&&!breath){
+    const pats=[(r,c)=>r>=ROWS-3,(r,c)=>Math.abs(c-3)+Math.abs(r-4)<=2,(r,c)=>c<=1||c>=COLS-2,(r,c)=>(r+c)%2===0&&r>=3,(r,c)=>r>=2&&r<=5&&c>=1&&c<=5];
+    const f=pats[n%pats.length];const cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(f(r,c)&&ok(r,c))cells.push([r,c]);
+    const lay=(D>0||d>=41)&&n%2&&cells.length*2<=36?2:1;for(const [r,c] of cells)sand.push([r,c,lay]);
+  }
+  /* kaya: diyar 1'de 11'den, sonra her diyarın ikinci yarısında */
+  const rockOn=(D===0&&d>=11)||(D>=1&&d>=41);
+  if(rockOn&&n%3!==0&&!breath){
+    const cnt=Math.min(10,3+Math.floor((Math.min(d,80)-10)*.1)+(hard?2:0));
+    const cells=[];for(let r=ROWS-1;r>=3;r--)for(const c of [1,5,3,0,6,2,4])if(ok(r,c))cells.push([r,c]);
+    const hp2=d>=16||D>0?Math.min(.45,(d+D*30)*.004):0;
+    for(let i=0;i<Math.min(Math.max(0,cnt),cells.length);i++){const [r,c]=cells[i];rocks.push([r,c,R()<hp2?2:1])}
+  }
+  const sandF=sand.filter(([r,c])=>!rocks.some(([y,x])=>y===r&&x===c));
+  const goals=[];
+  if(sandF.length)goals.push({sand:1,n:sandF.reduce((a,s)=>a+s[2],0)});
+  if(rocks.length)goals.push({rock:1,n:rocks.length});
+  const used=new Set(),pick=()=>{let k;do{k=Math.floor(R()*colors)}while(used.has(k));used.add(k);return k};
+  const cellsN=mask.join('').split('#').length-1;
+  const amt=()=>Math.round((14+Math.min(d,60)*.35+D*3+R()*6)*(cellsN/56)/2)*2;
+  const ncol=goals.length>=2?0:goals.length===1?1:(n<3?1:2);
+  for(let i=0;i<ncol;i++)goals.push({k:pick(),n:Math.max(10,amt())});
+  if(!goals.length)goals.push({k:pick(),n:Math.max(10,amt())});
+  /* ağlar: diyar 2'nin her bölümünde, diyar 3'ün ikinci yarısında çift bölümlerde */
+  let nets=[],cur=[];
+  if(D===1||(D===2&&d>=41&&n%2===0)||D>=3){
+    const cnt=Math.min(10,(D===1&&d<=10?3:4)+Math.floor((d%25)*.22)+(hard?1:0)-(breath?2:0));
+    const taken=new Set(rocks.map(([r,c])=>r*COLS+c));let g=0;
+    while(nets.length<cnt&&g++<500){const r=1+Math.floor(R()*6),c=Math.floor(R()*COLS),k=r*COLS+c;if(ok(r,c)&&!taken.has(k)){taken.add(k);nets.push([r,c])}}
+    if(nets.length)goals.splice(0,goals.length,{net:1,n:nets.length},goals[0]);
+  }
+  /* akıntı: diyar 3; ağ varsa 2, yoksa 3 satır, yan yana değil */
+  if(D===2||D>=3){
+    const rowsOk=[];for(let r=0;r<ROWS;r++)if(mask[r].split('#').length-1>=4)rowsOk.push(r);
+    const want=d<=10?1:nets.length||breath?2:3,chosen=[];
+    for(const r of (n%2?[1,4,6,2,5,7,0,3]:[2,4,6,1,5,7,3,0]))if(rowsOk.includes(r)&&!chosen.some(x=>Math.abs(x-r)<2)&&chosen.length<want)chosen.push(r);
+    cur=chosen.sort((a,b)=>a-b).map((r,i)=>[r,(i%2?-1:1)*(n%4<2?1:-1)]);
+  }
+  return {n,diyar:D,d,colors,rocks,sand:sandF,goals,seed:n*131+7,nets,cur,mask:full?null:mask,shape:full?'':DSHAPES[(n*5+D*3)%DSHAPES.length],breath,hard};
+}
+
 /* ===== bölümler: [tür sayısı, kayalar, kum, hedefler, hamle, tohum] — botla ayarlandı ===== */
-const LEVELS=[[5,[],[],[[0,20]],12,138,[],[],0,""],[5,[],[],[[0,18]],11,269,[],[],0,""],[5,[],[],[[0,16],[1,18]],13,400,[],[],0,""],[5,[],[],[[1,22],[4,18]],14,531,[],[],0,""],[5,[],[],[[1,20],[2,20]],15,662,[],[],0,""],[5,[],[[2,3,1],[3,2,1],[3,3,1],[3,4,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,2,1],[5,3,1],[5,4,1],[6,3,1]],[[-1,13],[1,12]],12,793,[],[],[".##.##.","#######","#######","#######",".#####.",".#####.","..###..","...#..."],"kalp"],[5,[],[[0,0,1],[0,1,1],[0,5,1],[0,6,1],[1,0,1],[1,1,1],[1,5,1],[1,6,1],[2,0,1],[2,1,1],[2,5,1],[2,6,1],[3,0,1],[3,1,1],[3,5,1],[3,6,1],[4,0,1],[4,1,1],[4,5,1],[4,6,1],[5,0,1],[5,1,1],[5,5,1],[5,6,1],[6,0,1],[6,1,1],[6,5,1],[6,6,1],[7,0,1],[7,1,1],[7,5,1],[7,6,1]],[[-1,32],[2,22]],21,924,[],[],0,""],[5,[],[],[[2,10],[3,10]],13,1055,[],[],["..###..","..###..","..###..","..###..","#######",".#####.","..###..","...#..."],"ok"],[5,[],[[2,1,1],[2,2,1],[2,3,1],[2,4,1],[2,5,1],[3,1,1],[3,2,1],[3,3,1],[3,4,1],[3,5,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,1,1],[5,2,1],[5,3,1],[5,4,1],[5,5,1]],[[-1,20],[2,18]],12,1186,[],[],["#.#.#.#","#######","#######","#######","#######","#######","#######","#######"],"kale"],[5,[],[[5,2,1],[5,3,1],[5,4,1],[6,1,1],[6,2,1],[6,3,1],[6,4,1],[6,5,1],[7,0,1],[7,1,1],[7,2,1],[7,3,1],[7,4,1],[7,5,1],[7,6,1]],[[-1,15],[3,14]],26,1317,[],[],["#######",".#####.","..###..","..###..","..###..","..###..",".#####.","#######"],"kumsaati"],[5,[[7,3,1],[7,2,1],[7,4,1]],[],[[-2,3],[4,16]],13,1448,[],[],["..###..","..###..","#######","#######","#######","#######","..###..","..###.."],"arti"],[5,[],[[0,0,1],[0,1,1],[0,5,1],[0,6,1],[1,0,1],[1,1,1],[1,5,1],[1,6,1],[2,0,1],[2,1,1],[2,5,1],[2,6,1],[3,0,1],[3,1,1],[3,5,1],[3,6,1],[4,0,1],[4,1,1],[4,5,1],[4,6,1],[5,0,1],[5,1,1],[5,5,1],[5,6,1],[6,0,1],[6,1,1],[6,5,1],[6,6,1],[7,0,1],[7,1,1],[7,5,1],[7,6,1]],[[-1,32],[3,16]],26,1579,[],[],["##...##","##...##","##...##","##...##","#######","#######","#######","#######"],"kupa"],[5,[[7,1,1],[7,5,1],[7,3,1]],[[3,1,1],[3,5,1],[4,0,1],[4,6,1],[5,1,1],[5,5,1],[6,0,1],[6,2,1],[6,4,1],[6,6,1]],[[-1,10],[-2,3]],25,1710,[],[],["#######","#######","##...##","##...##","##...##","##...##","#######","#######"],"halka"],[5,[[7,1,1],[7,5,1],[7,3,1]],[],[[-2,3],[0,24]],13,1841,[],[],0,""],[5,[],[[5,0,1],[5,1,1],[5,2,1],[5,3,1],[5,4,1],[5,5,1],[5,6,1],[6,0,1],[6,1,1],[6,2,1],[6,3,1],[6,4,1],[6,5,1],[6,6,1],[7,0,1],[7,1,1],[7,2,1],[7,3,1],[7,4,1],[7,5,1],[7,6,1]],[[-1,21],[4,18]],21,1972,[],[],["##...##","##...##","###.###","###.###","#######","#######","#######","#######"],"kuleler"],[5,[[7,3,1],[7,2,1],[7,4,1],[6,1,1]],[[2,3,1],[3,2,1],[3,3,1],[3,4,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,2,1],[5,3,1],[5,4,1],[6,3,1]],[[-1,13],[-2,4]],10,2103,[],[],["..###..",".#####.","######.","#######","#######","######.",".#####.","..###.."],"balik"],[5,[[7,3,2],[6,3,1],[6,2,1],[6,4,1]],[],[[-2,4],[2,12]],14,2234,[],[],["...#...","..###..",".#####.","#######","#######",".#####.","..###..","...#..."],"elmas"],[5,[],[[3,1,1],[3,3,1],[3,5,1],[4,0,1],[4,2,1],[4,4,1],[4,6,1],[5,1,1],[5,3,1],[5,5,1],[6,2,1],[6,4,1],[7,1,1],[7,5,1]],[[-1,14],[0,20]],18,2365,[],[],["..###..",".#####.","#######","#######","#######",".#####.",".##.##.",".##.##."],"kaplumbaga"],[5,[[7,1,1],[7,5,1],[7,0,1],[7,6,1],[7,2,1]],[[2,1,1],[2,2,1],[2,4,1],[2,5,1],[4,1,1],[4,2,1],[4,4,1],[4,5,1],[5,1,1],[5,2,1],[5,4,1],[5,5,1]],[[-1,12],[-2,5]],24,2496,[],[],["###.###","###.###","###.###",".......","###.###","###.###","###.###","###.###"],"pencere"],[5,[[7,1,1],[7,5,1],[7,3,2],[7,0,1],[7,6,1]],[],[[-2,5],[4,16]],18,2627,[],[],["#......","##.....","###....","####...","#####..","######.","#######","#######"],"basamak"],[5,[],[[2,3,2],[3,2,2],[3,3,2],[3,4,2],[4,1,2],[4,2,2],[4,3,2],[4,4,2],[4,5,2],[5,2,2],[5,3,2],[5,4,2],[6,3,2]],[[-3,4],[-1,26]],11,2758,[[5,2],[3,5],[2,0],[6,6]],[],0,""],[5,[[7,1,1],[7,5,1],[7,0,1],[7,6,1],[6,1,1]],[[0,1,1],[0,5,1],[1,0,1],[1,1,1],[1,5,1],[1,6,1],[2,0,1],[2,1,1],[2,5,1],[2,6,1],[3,0,1],[3,1,1],[3,5,1],[3,6,1],[4,0,1],[4,1,1],[4,5,1],[4,6,1],[5,0,1],[5,1,1],[5,5,1],[5,6,1],[6,0,1],[6,5,1],[6,6,1]],[[-3,4],[-1,25]],43,2889,[[5,5],[1,1],[1,0],[5,0]],[],[".#####.","#######","#######","##...##","##...##","##...##","##...##","##...##"],"kemer"],[5,[[7,3,1],[6,3,2],[6,2,2],[6,4,1],[5,1,1],[5,5,1]],[],[[-3,5],[-2,6]],13,3020,[[4,3],[4,2],[3,2],[5,3],[3,6]],[],[".##.##.","#######","#######","#######",".#####.",".#####.","..###..","...#..."],"kalp"],[5,[],[[2,1,1],[2,2,1],[2,4,1],[2,5,1],[3,1,1],[3,2,1],[3,3,1],[3,4,1],[3,5,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,1,1],[5,2,1],[5,4,1],[5,5,1]],[[-3,5],[-1,18]],13,3151,[[4,3],[3,4],[6,6],[6,2],[4,4]],[],["###.###","###.###","###.###","#######","#######","###.###","###.###","###.###"],"kopru"],[5,[[7,3,1],[6,3,1],[6,2,2],[6,4,1],[5,1,1],[5,5,1]],[[5,2,2],[5,3,2],[5,4,2]],[[-3,6],[-1,6]],15,3282,[[4,6],[4,5],[1,4],[4,4],[1,2],[3,4]],[],["..###..","..###..","..###..","..###..","#######",".#####.","..###..","...#..."],"ok"],[5,[[7,1,1],[7,5,2],[7,3,1],[7,0,1],[7,6,1],[7,2,1]],[],[[-3,7],[-2,6]],11,3413,[[4,0],[4,1],[5,4],[3,5],[5,1],[1,5],[2,1]],[],["#.#.#.#","#######","#######","#######","#######","#######","#######","#######"],"kale"],[5,[],[[0,0,2],[0,1,2],[0,5,2],[0,6,2],[1,1,2],[1,5,2],[6,1,2],[6,5,2],[7,0,2],[7,1,2],[7,5,2],[7,6,2]],[[-3,7],[-1,24]],36,3544,[[4,4],[3,3],[1,3],[2,2],[6,3],[1,2],[3,2]],[],["#######",".#####.","..###..","..###..","..###..","..###..",".#####.","#######"],"kumsaati"],[5,[[7,1,1],[7,5,1],[7,3,2],[7,0,1],[7,6,2],[7,2,2],[7,4,2]],[[3,1,1],[3,3,1],[3,5,1],[4,0,1],[4,2,1],[4,4,1],[4,6,1],[5,1,1],[5,3,1],[5,5,1],[6,0,1],[6,2,1],[6,4,1],[6,6,1]],[[-3,8],[-1,14]],17,3675,[[4,2],[5,2],[5,3],[2,3],[6,0],[5,1],[6,3],[4,5]],[],0,""],[5,[[7,1,1],[7,5,2],[7,3,1],[7,0,1],[7,6,2],[7,2,2],[7,4,1]],[],[[-3,8],[-2,7]],13,3806,[[4,2],[6,6],[1,6],[5,6],[5,3],[1,1],[4,3],[6,0]],[],["##...##","##...##","##...##","##...##","#######","#######","#######","#######"],"kupa"],[5,[],[[5,0,1],[5,1,1],[5,5,1],[5,6,1],[6,0,1],[6,1,1],[6,2,1],[6,3,1],[6,4,1],[6,5,1],[6,6,1],[7,0,1],[7,1,1],[7,2,1],[7,3,1],[7,4,1],[7,5,1],[7,6,1]],[[-3,9],[-1,18]],30,3937,[[3,5],[2,1],[1,3],[1,2],[2,6],[5,5],[6,4],[6,2],[3,6]],[],["#######","#######","##...##","##...##","##...##","##...##","#######","#######"],"halka"],[6,[[7,3,1],[7,2,2],[7,4,2],[6,3,1],[6,2,2],[6,4,2],[5,3,1],[5,2,2]],[[2,3,2],[3,2,2],[3,3,2],[3,4,2],[4,2,2],[4,3,2],[4,4,2],[5,4,2]],[[-1,16],[-2,8]],33,4068,[],[[1,-1]],["#######","#######","#######","..###..","..###..","..###..","..###..","..###.."],"te"],[6,[[7,1,1],[7,5,2],[7,3,1],[7,0,1],[7,6,2],[7,2,2],[7,4,2],[6,1,2]],[],[[-2,8],[4,24]],16,4199,[],[[2,1],[4,-1],[6,1]],["##...##","##...##","###.###","###.###","#######","#######","#######","#######"],"kuleler"],[6,[],[[3,1,2],[3,3,2],[3,5,2],[4,0,2],[4,2,2],[4,4,2],[4,6,2],[5,1,2],[5,3,2],[5,5,2],[6,2,2],[6,4,2],[7,3,2]],[[-1,26],[0,24]],17,4330,[],[[1,1],[4,-1],[6,1]],["..###..",".#####.","######.","#######","#######","######.",".#####.","..###.."],"balik"],[6,[[7,3,2],[6,3,2],[6,2,2],[6,4,2],[5,1,2],[5,5,1],[5,3,2],[5,2,2]],[[2,1,1],[2,2,1],[2,3,1],[2,4,1],[2,5,1],[3,1,1],[3,2,1],[3,3,1],[3,4,1],[3,5,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,4,1]],[[-1,16],[-2,8]],16,4461,[],[[2,-1],[4,1]],["...#...","..###..",".#####.","#######","#######",".#####.","..###..","...#..."],"elmas"],[6,[[7,1,2],[7,5,1],[7,3,1],[7,0,2],[7,6,2],[7,2,1],[7,4,1],[6,1,2],[6,5,1]],[],[[-2,9],[3,30]],16,4592,[],[[1,-1],[4,1],[6,-1]],0,""],[6,[],[[4,1,1],[4,2,1],[4,4,1],[4,5,1],[5,2,1],[5,4,1]],[[-1,6],[1,26]],24,4723,[],[[2,1],[4,-1],[6,1]],["###.###","###.###","###.###",".......","###.###","###.###","###.###","###.###"],"pencere"],[6,[[7,1,2],[7,5,2],[7,3,1],[7,0,2],[7,6,2],[7,2,1],[7,4,1],[6,1,1],[6,5,1]],[[0,0,1],[1,0,1],[1,1,1],[2,0,1],[2,1,1],[3,0,1],[3,1,1],[4,0,1],[4,1,1],[5,0,1],[5,1,1],[5,5,1],[6,0,1],[6,6,1]],[[-1,14],[-2,9]],19,4854,[],[[4,1],[6,-1]],["#......","##.....","###....","####...","#####..","######.","#######","#######"],"basamak"],[6,[[7,1,2],[7,3,1],[7,0,1],[7,2,2],[6,1,2],[6,3,1],[6,2,1],[6,4,1],[5,5,1]],[],[[-2,9],[0,22]],29,4985,[],[[2,-1],[4,1],[6,-1]],["####...","####...",".####..","..####.","...####","..####.",".####..","####..."],"zikzak"],[6,[],[[2,1,2],[2,2,2],[2,3,2],[2,4,2],[2,5,2],[3,1,2],[3,5,2],[4,1,2],[4,5,2],[5,1,2],[5,5,2]],[[-1,22],[2,24]],22,5116,[],[[1,-1],[4,1],[6,-1]],[".#####.","#######","#######","##...##","##...##","##...##","##...##","##...##"],"kemer"],[6,[[7,3,1],[6,3,2],[6,2,1],[6,4,2],[5,1,2],[5,5,1],[5,3,1],[5,2,1],[5,4,1],[4,1,1]],[],[[-2,10],[5,26]],20,5247,[],[[0,1],[2,-1],[4,1]],[".##.##.","#######","#######","#######",".#####.",".#####.","..###..","...#..."],"kalp"],[6,[[7,1,1],[7,5,1],[7,0,1],[7,6,2],[7,2,2],[7,4,1],[6,1,2],[6,5,1],[6,0,1],[6,6,1]],[],[[-3,4],[-2,10]],39,5378,[[6,2],[2,0],[5,0],[1,0]],[],["###.###","###.###","###.###","#######","#######","###.###","###.###","###.###"],"kopru"],[6,[],[[0,0,1],[0,1,1],[0,5,1],[0,6,1],[1,0,1],[1,1,1],[1,5,1],[1,6,1],[2,0,1],[2,1,1],[2,5,1],[2,6,1],[3,0,1],[3,1,1],[3,5,1],[3,6,1],[4,0,1],[4,1,1],[4,5,1],[4,6,1],[5,0,1],[5,1,1],[5,5,1],[5,6,1],[6,0,1],[6,1,1],[6,5,1],[6,6,1],[7,0,1],[7,1,1],[7,5,1],[7,6,1]],[[-3,4],[-1,32]],24,5509,[[1,3],[5,4],[2,2],[5,2]],[],0,""],[6,[[7,1,1],[7,5,2],[7,3,1],[7,0,1],[7,6,2],[7,2,1],[7,4,2],[6,1,1],[6,5,1],[6,3,2]],[[3,1,2],[3,3,2],[3,5,2],[4,0,2],[4,2,2],[4,4,2],[4,6,2],[5,1,2],[5,3,2],[5,5,2],[6,0,2],[6,2,2],[6,4,2],[6,6,2]],[[-3,5],[-1,28]],30,5640,[[5,3],[5,6],[6,2],[4,0],[2,4]],[],["#.#.#.#","#######","#######","#######","#######","#######","#######","#######"],"kale"],[6,[[7,1,1],[7,5,1],[7,3,1],[7,0,1],[7,6,2],[7,2,2],[7,4,1],[6,1,1],[6,5,1],[6,3,2]],[],[[-3,5],[-2,10]],39,5771,[[2,4],[1,3],[6,2],[1,1],[4,3]],[],["#######",".#####.","..###..","..###..","..###..","..###..",".#####.","#######"],"kumsaati"],[6,[],[[5,0,2],[5,1,2],[5,2,2],[5,3,2],[5,4,2],[5,5,2],[5,6,2],[6,2,2],[6,3,2],[6,4,2],[7,2,2],[7,3,2],[7,4,2]],[[-3,6],[-1,26]],31,5902,[[1,4],[1,2],[3,2],[2,6],[4,0],[4,3]],[],["..###..","..###..","#######","#######","#######","#######","..###..","..###.."],"arti"],[6,[[7,1,1],[7,5,2],[7,3,1],[7,0,1],[7,6,2],[7,2,2],[7,4,1],[6,1,2],[6,5,1],[6,3,1]],[[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,2,1],[5,3,1],[5,4,1]],[[-3,7],[-1,8]],12,6033,[[4,2],[1,0],[3,5],[5,5],[5,2],[1,6],[2,6]],[],["##...##","##...##","##...##","##...##","#######","#######","#######","#######"],"kupa"],[6,[[7,1,1],[7,5,1],[7,3,2],[7,0,1],[7,6,2],[7,2,2],[7,4,1],[6,1,2],[6,5,1],[6,3,1]],[],[[-3,7],[-2,10]],45,6164,[[3,6],[3,1],[6,6],[6,2],[6,0],[1,0],[5,5]],[],["#######","#######","##...##","##...##","##...##","##...##","#######","#######"],"halka"],[6,[],[[3,3,1],[4,2,1],[4,4,1],[5,3,1],[6,2,1],[6,4,1],[7,3,1]],[[-3,8],[-1,7]],17,6295,[[1,0],[2,2],[4,2],[2,3],[5,4],[1,4],[3,2],[6,4]],[],["#######","#######","#######","..###..","..###..","..###..","..###..","..###.."],"te"],[6,[[7,1,2],[7,5,2],[7,3,1],[7,0,1],[7,6,2],[7,2,2],[7,4,1],[6,1,2],[6,5,1],[6,3,2]],[[2,1,1],[2,2,1],[2,3,1],[2,4,1],[2,5,1],[3,1,1],[3,2,1],[3,3,1],[3,4,1],[3,5,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[4,5,1],[5,1,1],[5,2,1],[5,3,1],[5,4,1],[5,5,1]],[[-3,8],[-1,20]],15,6426,[[3,0],[2,3],[2,4],[4,6],[6,4],[4,3],[5,1],[3,6]],[],0,""],[6,[[7,3,2],[7,2,1],[7,4,2],[6,1,1],[6,5,1],[6,3,2],[6,2,2],[6,4,2],[5,1,2],[5,5,2]],[],[[-3,9],[-2,10]],28,6557,[[4,2],[3,6],[5,0],[5,2],[2,4],[3,2],[3,5],[4,1],[1,1]],[],["..###..",".#####.","######.","#######","#######","######.",".#####.","..###.."],"balik"],[6,[],[[2,3,2],[3,2,2],[3,3,2],[3,4,2],[4,1,2],[4,2,2],[4,3,2],[4,4,2],[4,5,2],[5,2,2],[5,3,2],[5,4,2],[6,3,2]],[[-1,26],[0,20]],15,6688,[],[[2,-1],[4,1]],["...#...","..###..",".#####.","#######","#######",".#####.","..###..","...#..."],"elmas"],[6,[[7,1,2],[7,5,1],[7,2,1],[7,4,1],[6,1,1],[6,5,1],[6,2,2],[6,4,1],[5,1,1],[5,5,1]],[[1,1,1],[1,5,1],[2,0,1],[2,1,1],[2,5,1],[2,6,1],[3,0,1],[3,1,1],[3,5,1],[3,6,1],[4,0,1],[4,1,1],[4,5,1],[4,6,1]],[[-3,4],[-1,14]],14,6819,[[2,6],[3,6],[2,4],[1,5]],[[2,1],[4,-1]],["..###..",".#####.","#######","#######","#######",".#####.",".##.##.",".##.##."],"kaplumbaga"],[6,[],[],[[1,26],[0,28]],33,6950,[],[[1,1],[4,-1]],["###.###","###.###","###.###",".......","###.###","###.###","###.###","###.###"],"pencere"],[6,[],[[2,1,1],[2,2,1],[3,1,1],[3,2,1],[3,3,1],[4,1,1],[4,2,1],[4,3,1],[4,4,1],[5,1,1],[5,2,1],[5,3,1],[5,4,1],[5,5,1]],[[-3,5],[-1,14]],10,7081,[[5,0],[6,5],[3,2],[2,2],[6,0]],[[4,-1],[6,1]],["#......","##.....","###....","####...","#####..","######.","#######","#######"],"basamak"],[6,[],[[5,2,2],[5,3,2],[5,4,2],[5,5,2],[6,1,2],[6,2,2],[6,3,2],[6,4,2],[7,0,2],[7,1,2],[7,2,2],[7,3,2]],[[-1,24],[2,22]],39,7212,[],[[1,-1],[4,1]],["####...","####...",".####..","..####.","...####","..####.",".####..","####..."],"zikzak"],[6,[[7,1,1],[7,5,1],[7,3,2],[7,0,2],[7,6,1],[7,2,1],[7,4,2],[6,1,1],[6,5,2],[6,3,2]],[],[[-3,7],[-2,10]],15,7343,[[1,6],[5,3],[3,4],[5,6],[1,2],[3,0],[1,1]],[[2,1],[4,-1]],0,""],[6,[],[[0,1,2],[0,5,2],[1,0,2],[1,1,2],[1,5,2],[1,6,2],[2,0,2],[2,1,2],[2,5,2],[2,6,2],[3,0,2],[3,1,2],[3,5,2],[3,6,2],[4,1,2],[4,5,2],[5,1,2],[5,5,2]],[[-1,36],[3,24]],23,7474,[],[[1,1],[4,-1]],[".##.##.","#######","#######","#######",".#####.",".#####.","..###..","...#..."],"kalp"],[6,[[7,1,1],[7,5,1],[7,0,2],[7,6,2],[7,2,1],[7,4,1],[6,1,1],[6,5,1],[6,0,1],[6,6,1]],[[3,1,1],[3,3,1],[3,5,1],[4,0,1],[4,2,1],[4,4,1],[4,6,1],[5,1,1],[5,5,1],[6,2,1],[6,4,1]],[[-3,8],[-1,11]],16,7605,[[3,6],[4,2],[4,4],[6,2],[3,0],[1,0],[5,2],[2,5]],[[2,-1],[4,1]],["###.###","###.###","###.###","#######","#######","###.###","###.###","###.###"],"kopru"],[6,[],[],[[3,18],[5,16]],19,7736,[],[[4,-1]],["..###..","..###..","..###..","..###..","#######",".#####.","..###..","...#..."],"ok"],[6,[],[[5,0,1],[5,1,1],[5,2,1],[5,3,1],[5,4,1],[5,5,1],[5,6,1],[6,0,1],[6,1,1],[6,2,1],[6,3,1],[6,4,1],[6,5,1],[6,6,1],[7,0,1],[7,1,1],[7,2,1],[7,3,1],[7,4,1],[7,5,1],[7,6,1]],[[-3,9],[-1,21]],16,7867,[[4,2],[6,2],[6,6],[5,0],[1,1],[5,3],[6,1],[3,3],[6,3]],[[2,1],[4,-1]],["#.#.#.#","#######","#######","#######","#######","#######","#######","#######"],"kale"]].map((a,i)=>({n:i+1,colors:a[0],rocks:a[1],sand:a[2],goals:a[3].map(([k,n])=>k===-1?{sand:1,n}:k===-2?{rock:1,n}:k===-3?{net:1,n}:{k,n}),moves:a[4],seed:a[5],nets:a[6]||[],cur:a[7]||[],mask:a[8]||null,shape:a[9]||'',dark:false}));
+const MOVES=[12,11,12,12,12,23,23,18,12,41,15,30,15,12,30,17,16,17,12,20,15,22,26,19,17,17,39,14,18,20,17,25,18,18,17,17,28,18,15,29,20,20,19,38,36,25,19,17,16,23,21,19,17,18,14,19,35,21,25,16,22,22,22,17,18,33,26,20,18,13,21,23,24,38,35,26,19,30,28,21,38,27,45,29,34,33,38,44,32,31,34,45,38,21,40,32,40,37,27,45,15,12,11,21,18,21,13,18,15,16,14,14,22,12,16,15,15,20,15,15,17,23,22,13,20,19,21,15,14,27,15,19,21,14,15,18,17,27,20,23,18,20,25,12,20,21,29,22,13,14,20,26,20,15,31,19,28,16,25,23,22,20,23,45,27,19,16,14,26,14,32,45,43,16,20,40,27,23,22,20,34,43,33,17,24,34,40,44,38,38,30,24,45,45,21,30,26,22,16,30,13,22,16,15,10,19,14,16,13,12,12,10,11,10,10,16,10,12,16,12,12,13,21,15,11,12,14,10,10,12,12,11,15,10,11,25,13,12,13,19,12,10,16,12,18,13,19,10,10,17,26,14,25,23,24,21,37,14,19,13,25,27,22,11,16,23,37,15,37,16,28,21,24,15,40,27,14,18,25,10,26,12,16,15,22,28,36,17,16,15,26,18,25,10,26,34,23,17,22,13];
+const LEVELS=MOVES.map((m,i)=>{const L=designLevel(i+1);L.moves=m;L.dark=false;return L});
 const TIPS={1:"Bir objeyi yanındakiyle yer değiştirmek için kaydır. Aynı türden 3 tanesi yan yana gelince kırılır.",
   2:"Düşen objeler yeni eşleşmeler yaparsa zincirleme kırılır.",
   3:"4'lü eşleşme dalga yapar: bütün satırı ya da sütunu temizler.",
@@ -1450,16 +1557,18 @@ $('quitGo').onclick=()=>{if(quitFrom==='game')logEnd('q');loseLife();show($('ovQ
 
 /* ===== harita: dipten yüzeye ===== */
 const GAP=96;
-function nodePos(i){const W=Math.min(440,innerWidth);return {x:W/2+Math.sin(i*1.05)*Math.min(110,W*.28),y:(LEVELS.length-i)*GAP+50}}
+let PAGE=0;const MTOP=110;const PG0=()=>PAGE*100,PGN=()=>Math.max(1,Math.min(100,LEVELS.length-PAGE*100)),NPAGE=()=>Math.ceil(LEVELS.length/100);
+function nodePos(i){const W=Math.min(440,innerWidth);return {x:W/2+Math.sin(i*1.05)*Math.min(110,W*.28),y:(PGN()-(i-PG0()))*GAP+50+MTOP}}
 /* ===== harita süsleri: bölge renkleri, mercanlar, yosunlar, kabuklar ===== */
-const ZCOL=[[0,19,['#22D3B6','#7CF0C8','#FFD36E']],[20,29,['#F2A65A','#FFD9A0','#E86F51']],[30,39,['#19C3E6','#8BF3FF','#4E8CFF']],[40,49,['#FF6F91','#FFB3C7','#FF9F43']],[50,59,['#9B6BFF','#D3B8FF','#5CE1E6']]];
-const zoneOf=i=>ZCOL.findIndex(z=>i>=z[0]&&i<=z[1]);
+const ZCOL=[[0,0,['#22D3B6','#7CF0C8','#FFD36E']],[0,0,['#F2A65A','#FFD9A0','#E86F51']],[0,0,['#19C3E6','#8BF3FF','#4E8CFF']],[0,0,['#FF6F91','#FFB3C7','#FF9F43']],[0,0,['#9B6BFF','#D3B8FF','#5CE1E6']]];
+/* her bölge (20 bölüm) kendi renginde; diyar değişince sıra kayar */
+const zoneOf=i=>(Math.floor(i/20)+Math.floor(i/100)*2)%5;
 let decoCache=null;
 function mapDeco(W,H){
-  if(decoCache&&decoCache.W===W&&decoCache.H===H)return decoCache.cv;
-  const R=makeRng(4242),N=LEVELS.length,pts=[];for(let i=0;i<N;i++)pts.push(nodePos(i));
+  if(decoCache&&decoCache.W===W&&decoCache.H===H&&decoCache.P===PAGE)return decoCache.cv;
+  const P0=PG0(),R=makeRng(4242+PAGE*977),N=PGN(),pts=[];for(let i=0;i<N;i++)pts.push(nodePos(P0+i));
   const segD=(x,y)=>{let m=1e9;for(let i=0;i<N;i++){const a=pts[i],b=pts[i+1]||a,dx=b.x-a.x,dy=b.y-a.y,l=dx*dx+dy*dy||1;let t=((x-a.x)*dx+(y-a.y)*dy)/l;t=Math.max(0,Math.min(1,t));m=Math.min(m,Math.hypot(x-a.x-t*dx,y-a.y-t*dy))}return m};
-  const levelAtY=y=>Math.max(0,Math.min(N-1,Math.round(N-(y-50)/GAP)));
+  const levelAtY=y=>P0+Math.max(0,Math.min(N-1,Math.round(N-(y-50-MTOP)/GAP)));
   /* süs listesi */
   const items=[],kinds=['coral','coral','weed','weed','star','shell','rock','anem','pearl','weed','coral','fish'];
   let tries=0;while(items.length<Math.round(H/26)&&tries++<6000){
@@ -1472,16 +1581,16 @@ function mapDeco(W,H){
   const dpr=Math.min(1.5,devicePixelRatio||1),cvs=[],NZ=Math.ceil(N/20),cuts=[0];
   for(let z=NZ-1;z>=1;z--)cuts.push(Math.round((pts[z*20-1].y+pts[z*20].y)/2));cuts.push(H);
   for(let ci=0;ci<cuts.length-1;ci++){const y0=cuts[ci];
-    const h=cuts[ci+1]-y0,cv=document.createElement('canvas');cv.className='mapdeco';cv.dataset.z=NZ-1-ci;cv.width=Math.round(W*dpr);cv.height=Math.round(h*dpr);
+    const h=cuts[ci+1]-y0,cv=document.createElement('canvas');cv.className='mapdeco';cv.dataset.z=PAGE*5+NZ-1-ci;cv.width=Math.round(W*dpr);cv.height=Math.round(h*dpr);
     cv.style.cssText=`top:${y0}px;width:${W}px;height:${h}px`;const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,-y0*dpr);
     /* bölge renk bantları */
-    ZCOL.forEach(([i0,i1,col],zi)=>{const top=zi===ZCOL.length-1?0:pts[i1].y-GAP/2,bot=i0===0?H:pts[i0].y+GAP/2;
-      if(bot<y0||top>y0+h)return;const g=c.createLinearGradient(0,top-60,0,bot+60);
+    for(let lz=0;lz<NZ;lz++){const i0=lz*20,i1=Math.min(N-1,lz*20+19),col=ZCOL[zoneOf(P0+i0)][2],zi=PAGE*5+lz;const top=lz===NZ-1?0:pts[i1].y-GAP/2,bot=lz===0?H:pts[i0].y+GAP/2;
+      if(bot<y0||top>y0+h)continue;const g=c.createLinearGradient(0,top-60,0,bot+60);
       g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.12,col[0]+'38');g.addColorStop(.5,col[1]+'2A');g.addColorStop(.88,col[0]+'38');g.addColorStop(1,'rgba(0,0,0,0)');
       c.fillStyle=g;c.fillRect(0,top-60,W,bot-top+120);
       /* yanlarda renkli ışık lekeleri */
       const rg=makeRng(zi*77+5);for(let k=0;k<4;k++){const yy=top+rg()*(bot-top),xx=rg()<.5?0:W,rr=120+rg()*80;
-        const q=c.createRadialGradient(xx,yy,0,xx,yy,rr);q.addColorStop(0,col[k%3]+'55');q.addColorStop(1,col[k%3]+'00');c.fillStyle=q;c.fillRect(xx-rr,yy-rr,rr*2,rr*2)}});
+        const q=c.createRadialGradient(xx,yy,0,xx,yy,rr);q.addColorStop(0,col[k%3]+'55');q.addColorStop(1,col[k%3]+'00');c.fillStyle=q;c.fillRect(xx-rr,yy-rr,rr*2,rr*2)}}
     /* yüzey ışıkları */
     if(y0===0){for(let k=0;k<6;k++){const x=W*(k+.5)/6+(k%2?18:-12),g=c.createLinearGradient(0,0,0,520);g.addColorStop(0,'rgba(255,255,220,.30)');g.addColorStop(1,'rgba(255,255,220,0)');
       c.fillStyle=g;c.beginPath();c.moveTo(x-14,0);c.lineTo(x+16,0);c.lineTo(x+70-k*6,520);c.lineTo(x+10-k*6,520);c.fill()}}
@@ -1490,7 +1599,7 @@ function mapDeco(W,H){
     c.strokeStyle='rgba(255,230,170,.20)';c.lineWidth=46;c.stroke();c.strokeStyle='rgba(255,240,200,.18)';c.lineWidth=28;c.stroke();
     for(const o of items){if(o.k==='weed'||o.k==='fish'||o.y<y0-60||o.y>y0+h+60)continue;drawDeco(c,o)}
     cvs.push(cv)}
-  decoCache={W,H,cv:cvs,anim:items.filter(o=>o.k==='weed'||o.k==='fish')};return cvs}
+  decoCache={W,H,P:PAGE,cv:cvs,anim:items.filter(o=>o.k==='weed'||o.k==='fish')};return cvs}
 function drawDeco(c,o,T){T=T||0;
   const col=ZCOL[o.z<0?0:o.z][2],P=['#FF6B6B','#FF9F43','#FF6FB5','#B983FF','#FFD36E','#4FE3C1'],pc=P[Math.floor(o.r*P.length)],s=o.s;
   c.save();c.translate(o.x,o.y);
@@ -1532,7 +1641,7 @@ let celebrating=null;
 function applyZoneLook(){if(!S.zoneDone){S.zoneDone=[];for(let z=0;z<ZN();z++)if(zoneDoneNow(z))S.zoneDone.push(z);saveSoon()}document.querySelectorAll('#map canvas.mapdeco[data-z]').forEach(cv=>{const st=zoneState(+cv.dataset.z);cv.classList.toggle('zs-far',st==='far');cv.classList.toggle('zs-cur',st==='cur')})}
 function checkZones(){if(celebrating||!S.zoneDone||$('home').hidden)return;const nw=[];for(let z=0;z<ZN();z++)if(zoneDoneNow(z)&&!S.zoneDone.includes(z))nw.push(z);if(!nw.length)return;
   const top2=nw.pop();nw.forEach(z=>S.zoneDone.push(z));celebrateZone(top2)}
-function celebrateZone(z){celebrating={z};applyZoneLook();const v=$('mapView'),a=nodePos(Math.min(LEVELS.length-1,z*20+19)).y,b=nodePos(z*20).y;
+function celebrateZone(z){if(Math.floor(z/5)!==PAGE){PAGE=Math.floor(z/5);renderMap()}celebrating={z};applyZoneLook();const v=$('mapView'),a=nodePos(Math.min(PG0()+PGN()-1,z*20+19)).y,b=nodePos(z*20).y;
   v.scrollTo({top:Math.max(0,(a+b)/2-v.clientHeight/2),behavior:'smooth'});
   setTimeout(()=>{S.zoneDone.push(z);save();applyZoneLook();try{jingle()}catch(e){}buzz([20,30,20,30,60]);
     const m=$('map'),tag=document.createElement('div');tag.className='zcele';tag.style.top=((a+b)/2)+'px';tag.innerHTML=`<b>Bölge ${z+1} canlandı!</b><small>Mercanlar açtı, balıklar geri döndü</small>`;m.appendChild(tag);
@@ -1663,22 +1772,32 @@ function useTool(r,c){const t=toolSel,T=TOOLS[t];if(S.coins<T.cost){toolSel=null
   if(t==='hammer'){shakeT=Math.max(shakeT,.18);crunch();buzz(25)}
   chain=0;drifted=false;handle(res,false);phase='resolve'}
 document.querySelectorAll('#tools .tool').forEach(b=>b.onclick=()=>pickTool(b.dataset.t));
+function goPage(p,dir){if(p<0||p>=NPAGE())return;PAGE=p;const v=$('mapView');v.classList.remove('pgdown','pgup');void v.offsetWidth;v.classList.add(dir==='down'?'pgdown':'pgup');
+  try{splash()}catch(e){}renderMap();requestAnimationFrame(()=>{v.scrollTop=dir==='down'?v.scrollHeight:0});
+  S.pageSeen=S.pageSeen||[];if(!S.pageSeen.includes(p)){S.pageSeen.push(p);saveSoon();diyarBanner(p)}}
+function diyarBanner(p){const D=DIYAR[p];if(!D)return;const b=document.createElement('div');b.className='dbanner';b.innerHTML=`<small>Diyar ${p+1}</small><b>${D.name}</b><i>Bekçisi: ${D.bekci}</i>`;$('home').appendChild(b);setTimeout(()=>b.remove(),3200)}
 function renderMap(){
-  renderGrain();const m=$('map'),H=(LEVELS.length+1)*GAP+50,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
-  const cur=unlocked();let d='';for(let i=0;i<LEVELS.length;i++){const p=nodePos(i);d+=(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)}
+  renderGrain();const P0=PG0(),PN=PGN(),m=$('map'),H=(PN+1)*GAP+50+MTOP,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
+  const cur=unlocked();let d='';for(let i=P0;i<P0+PN;i++){const p=nodePos(i);d+=(i>P0?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)}
   try{mapDeco(W,H).forEach(cv=>m.appendChild(cv))}catch(e){}
-  for(const [i0,i1,name,cls] of [[0,19,'Mercan Lagünü · 1–20','zl'],[20,29,'Balıkçı Ağları · 21–30','zn'],[30,39,'Akıntı Boğazı · 31–40','zc'],[40,49,'Mercan Labirenti · 41–50','zm'],[50,59,'Batık Şehir · 51–60','zs']]){const a=nodePos(i1),b=nodePos(i0);m.insertAdjacentHTML('beforeend',`<div class="zone ${cls}" style="top:${a.y-60}px;height:${b.y-a.y+120}px"><span>${name}</span></div>`)}
-  m.insertAdjacentHTML('beforeend',`<div class="surface">≈ Yüzey ≈</div><svg class="path" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" fill="none" stroke="rgba(2,18,32,.6)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="rgba(181,255,246,.45)" stroke-width="6" stroke-dasharray="1 15" stroke-linecap="round"/></svg>`);
+  for(let z=P0/20;z<(P0+PN)/20;z++){const i0=z*20,i1=Math.min(P0+PN-1,z*20+19),a=nodePos(i1),b=nodePos(i0);m.insertAdjacentHTML('beforeend',`<div class="zone zc${zoneOf(i0)}" style="top:${a.y-60}px;height:${b.y-a.y+120}px"><span>Bölge ${z+1} · ${i0+1}–${i1+1}</span></div>`)}
+  const DY=DIYAR[PAGE]||{name:'Derinlik'};$('dHead').innerHTML=`<span><small>Diyar ${PAGE+1}</small>${DY.name}</span>`;
+  m.insertAdjacentHTML('beforeend',`<svg class="path" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" fill="none" stroke="rgba(2,18,32,.6)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="rgba(181,255,246,.45)" stroke-width="6" stroke-dasharray="1 15" stroke-linecap="round"/></svg>`);
+  /* üstte: sonraki diyarın kapısı ya da "yakında" duvarı; altta: önceki diyara dönüş */
+  if(PAGE<NPAGE()-1){const open=S.allOpen||cur>=P0+100,nd=DIYAR[PAGE+1]||{name:''};const g=document.createElement('button');g.type='button';g.className='gate'+(open?'':' lockd');
+    g.innerHTML=`<small>${open?'Daha derine dal':'Kilitli · '+(P0+100)+'. bölümü bitir'}</small><b>Diyar ${PAGE+2}: ${nd.name}</b>`;g.style.top='14px';if(open)g.onclick=()=>goPage(PAGE+1,'down');m.appendChild(g)}
+  else{const nd=DIYAR[PAGE+1]||{name:'Yeni diyar'};m.insertAdjacentHTML('beforeend',`<div class="soon"><small>Diyar ${PAGE+2} · Yakında</small><b>${nd.name}</b><p>Her hafta yeni bir diyar geliyor. O zamana kadar Günlük Dalış ve Altın İnci seni bekliyor.</p></div>`)}
+  if(PAGE>0){const g=document.createElement('button');g.type='button';g.className='gate back';g.innerHTML=`<small>Yüzeye doğru</small><b>Diyar ${PAGE}: ${(DIYAR[PAGE-1]||{}).name||''}</b>`;g.style.top=(H-6)+'px';g.onclick=()=>goPage(PAGE-1,'up');m.appendChild(g)}
   const ts=totalStars();
-  ST.forEach((s,i)=>{const lv=Math.min(LEVELS.length-1,Math.ceil(s[1]/2.2));const p=nodePos(lv);const g=document.createElement('div');g.className='sign'+(ts>=s[1]?' open':'');
+  ST.forEach((s,i)=>{const lv=Math.min(LEVELS.length-1,Math.ceil(s[1]/2.2));if(lv<P0||lv>=P0+PN)return;const p=nodePos(lv);const g=document.createElement('div');g.className='sign'+(ts>=s[1]?' open':'');
     g.style.left=(p.x>W/2?p.x-96:p.x+96)+'px';g.style.top=(p.y-GAP/2)+'px';g.textContent=`★${s[1]} ${s[0]}`;m.appendChild(g)});
-  LEVELS.forEach((lv,i)=>{const p=nodePos(i),b=document.createElement('button');b.type='button';b.className='node z'+Math.max(0,zoneOf(i));b.style.left=p.x+'px';b.style.top=p.y+'px';
+  for(let i=P0;i<P0+PN;i++){const p=nodePos(i),b=document.createElement('button');b.type='button';b.className='node z'+Math.max(0,zoneOf(i));b.style.left=p.x+'px';b.style.top=p.y+'px';
     const st=S.stars[i]||0;b.textContent=i+1;
     if(st){b.classList.add('done');b.insertAdjacentHTML('beforeend',`<span class="ns">${[1,2,3].map(k=>k<=st?'★':'<i>★</i>').join('')}</span>`)}
     if(i===cur&&!st){b.classList.add('cur');if(!totalStars()){const co=document.createElement('div');co.className='callout';co.textContent='Buradan başla';co.style.left=p.x+'px';co.style.top=p.y+'px';m.appendChild(co)}}
     if(i>cur&&!S.allOpen){b.classList.add('locked');b.setAttribute('aria-label',`Bölüm ${i+1}, kilitli`)}else{b.setAttribute('aria-label',`Bölüm ${i+1}, ${st} yıldız`);b.onclick=()=>openLevel(i)}
     if((S.gold||[])[i])b.classList.add('gold');
-    m.appendChild(b)});
+    m.appendChild(b)}
   applyZoneLook();setTimeout(checkZones,500);
 }
 const FEAT=[
@@ -1731,12 +1850,12 @@ $('petSave').onclick=()=>{const v=$('petName').value.trim();if(v){pet().name=v.s
 $('petFeed').onclick=()=>{const p=pet();if(p.fed===today()||S.coins<20)return;S.coins-=20;p.fed=today();save();
   if(petLv()>=1)addLife();petXP(2);petEvent('cheer',2.5);jingle();buzz([20,30,20]);
   $('petMsg').textContent=petLv()>=1?`${p.name} karnını doyurdu ve sana 1 can hediye etti!`:`${p.name} karnını doyurdu, çok mutlu!`;renderPet();renderTop()};
-function scrollToCur(){const p=nodePos(unlocked()),w=$('mapView');w.scrollTop=p.y-w.clientHeight*.6}
+function scrollToCur(){const u=unlocked(),w=$('mapView');if(Math.floor(u/100)!==PAGE){w.scrollTop=w.scrollHeight;return}const p=nodePos(u);w.scrollTop=p.y-w.clientHeight*.6}
 function renderTop(){tickLives();checkCards(false);show($('cardDot'),(S.cards||[]).length>(S.cardSeen||0));
   $('livesN').textContent=S.lives;$('livesT').textContent=S.lives>=maxLives()?'Dolu':fmt(nextLifeMs());
   $('coinsN').textContent=S.coins;$('starsN').textContent=totalStars();
   show($('reefDot'),ST.some((s,i)=>!S.st[i]&&totalStars()>=s[1]&&S.coins>=s[2]))}
-function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on){MUS.mode='calm';musVol()}setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();if(!S.story0)setTimeout(()=>openStory(),450);else setTimeout(nextFeatPopup,700)}
+function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on){MUS.mode='calm';musVol()}setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();{const np=Math.floor(unlocked()/100);if(np!==PAGE){PAGE=np;if(np>0&&!(S.pageSeen||[]).includes(np)){S.pageSeen=(S.pageSeen||[]).concat(np);setTimeout(()=>diyarBanner(np),400)}}}renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();if(!S.story0)setTimeout(()=>openStory(),450);else setTimeout(nextFeatPopup,700)}
 function setTab(t){show($('playBar'),t==='map');[['tabMap','map','mapView'],['tabReef','reef','reefView'],['tabCards','cards','cardView']].forEach(([b,k,v])=>{$(b).setAttribute('aria-selected',t===k);show($(v),t===k)});if(t==='map')scrollToCur();if(t==='cards'){renderCards();S.cardSeen=(S.cards||[]).length;save();show($('cardDot'),false)}}
 $('tabMap').onclick=()=>setTab('map');$('tabCards').onclick=()=>setTab('cards');$('tabReef').onclick=()=>{renderReef();setTab('reef')};
 
@@ -1983,7 +2102,7 @@ addEventListener('resize',()=>{if(!$('title').hidden)tSize()});
 function dayHash(d){let h=7;for(const ch of (d||today()))h=(h*131+ch.charCodeAt(0))>>>0;return h}
 function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function dailyLevel(){
-  const h=dayHash(),base=LEVELS[5+h%(LEVELS.length-5)],D=JSON.parse(JSON.stringify(base));
+  const h=dayHash(),base=LEVELS[5+h%Math.max(10,Math.min(LEVELS.length,unlocked()+20)-5)],D=JSON.parse(JSON.stringify(base));
   D.n=0;D.daily=true;D.seed=h%100000+17;D.moves=base.moves+3;
   const tw=h%3,r2=makeRng(h);
   if(tw===0&&!D.cur.length)D.cur=[[2,1],[5,-1]];
