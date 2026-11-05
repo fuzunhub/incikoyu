@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="İnci Koyu">
+<meta name="apple-mobile-web-app-title" content="İnciland">
 <style>:root{box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}
 html,body{overscroll-behavior:none;-webkit-touch-callout:none}
 /* uygulama: alt çubuklar ekranın en altına kadar uzanır, çentik/ana ekran çizgisi payını kendileri bırakır */
@@ -27,7 +27,7 @@ html,body{min-height:100vh}
 html,body{height:100%}</style>
 </head>
 <body>
-<title>İnci Koyu</title>
+<title>İnciland</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700&family=Cinzel:wght@600;800&display=swap">
 <style>
 /* Layout: deniz dibi tek ekran oyun. Harita = dipten yüzeye kıvrılan bölüm yolu; Resif sekmesi = onarılan istasyonlar; oyunda üstte hamle/hedef, ortada 7×8 kaydırmalı tahta */
@@ -227,7 +227,9 @@ details.dev summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--mu
 .isteps svg{vertical-align:-4px}
 .ttop{position:relative;display:flex;gap:8px;justify-content:flex-end;padding:10px max(14px,env(safe-area-inset-right,0px)) 0 max(14px,env(safe-area-inset-left,0px))}
 .tmain{position:relative;margin-top:clamp(20px,9vh,90px);display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none;transition:transform .55s ease-in,opacity .45s}
-.logo{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(66px,22vw,108px);line-height:.92;text-align:center}
+.logo{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(54px,18.5vw,96px);line-height:1;text-align:center;letter-spacing:-.01em}
+.logo .gl{background-image:linear-gradient(180deg,#FFF6D6 0%,#F6D77A 38%,#E3A93A 70%,#A86E16 100%)!important}
+.lorn{width:min(68vw,280px);height:auto;margin-top:-4px;filter:drop-shadow(0 2px 0 rgba(6,36,59,.6))}
 .logo .ln{display:flex;justify-content:center}
 .logo span{position:relative;display:inline-block;padding:0 .015em;background:linear-gradient(180deg,#FFFFFF 0%,#F3EAFE 48%,#B6A3DF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 5px 0 #06243B) drop-shadow(0 0 1.5px #06243B);animation:lfloat 3.2s ease-in-out infinite;animation-delay:calc(var(--i) * -.4s)}
@@ -236,7 +238,7 @@ details.dev summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--mu
   background:radial-gradient(circle at 35% 30%,#fff,#EEE6FA 55%,#A897CF);box-shadow:0 0 18px 4px rgba(255,240,215,.55),0 4px 0 #06243B;animation:glow 2.6s ease-in-out infinite}
 @keyframes lfloat{50%{transform:translateY(-7px) rotate(-1.5deg)}}
 @keyframes glow{50%{box-shadow:0 0 30px 9px rgba(255,240,215,.75),0 4px 0 #06243B}}
-.tag{margin:0;font-weight:700;font-size:16px;color:var(--muted);text-shadow:0 2px 0 #021220}
+.tag{margin:0;font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#D6F6FF;text-shadow:0 2px 0 #021220}
 .tbottom{position:absolute;left:0;right:0;bottom:calc(31% + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));transition:transform .55s ease-in,opacity .45s}
 .tbottom .cta{width:min(100%,280px);font-size:23px;padding:14px 0;border-radius:22px;animation:breathe 2.2s ease-in-out infinite}
 @keyframes breathe{50%{transform:scale(1.04)}}
@@ -325,10 +327,12 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <canvas id="tcv" aria-hidden="true"></canvas>
   <div class="ttop"><button class="instbtn" id="tInstall" type="button" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Yükle</button><button class="iconbtn" id="tSet" type="button" aria-label="Ayarlar">⚙</button></div>
   <div class="tmain">
-    <h1 class="logo" aria-label="İnci Koyu">
-      <span class="ln" aria-hidden="true"><span class="pi" style="--i:0">I</span><span style="--i:1">n</span><span style="--i:2">c</span><span style="--i:3">i</span></span>
-      <span class="ln ln2" aria-hidden="true"><span style="--i:4">K</span><span style="--i:5">o</span><span style="--i:6">y</span><span style="--i:7">u</span></span>
+    <h1 class="logo" aria-label="İnciland">
+      <span class="ln" aria-hidden="true"><span class="pi" style="--i:0">I</span><span style="--i:1">n</span><span style="--i:2">c</span><span style="--i:3">i</span><span class="gl" style="--i:4">l</span><span class="gl" style="--i:5">a</span><span class="gl" style="--i:6">n</span><span class="gl" style="--i:7">d</span></span>
     </h1>
+    <svg class="lorn" viewBox="0 0 240 34" aria-hidden="true"><defs><linearGradient id="lgold" x1="0" x2="1"><stop offset="0" stop-color="#B07A1E" stop-opacity="0"/><stop offset=".25" stop-color="#E9B949"/><stop offset=".5" stop-color="#FFF1C2"/><stop offset=".75" stop-color="#E9B949"/><stop offset="1" stop-color="#B07A1E" stop-opacity="0"/></linearGradient></defs>
+      <path d="M8 17 Q60 6 98 17" stroke="url(#lgold)" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M142 17 Q180 6 232 17" stroke="url(#lgold)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M104 22 Q104 6 120 5 Q136 6 136 22 Q120 27 104 22Z" fill="none" stroke="#E9B949" stroke-width="2.2"/><path d="M120 24 L110 10 M120 24 L120 6 M120 24 L130 10" stroke="#E9B949" stroke-width="1.6" stroke-linecap="round"/><circle cx="120" cy="19" r="4.2" fill="#FFF8EC"/></svg>
     <p class="tag">Derinlerdeki incileri topla</p>
   </div>
   <div class="tbottom">
@@ -1027,7 +1031,7 @@ function handle(res,isFirst){
   const sceneFx=res.fx.filter(f=>f.t!=='group');
   let maxDelay=0,flyN=0,sx=0,sy=0,n=0;
   for(const p of res.popped){
-    const [X,Y]=scr(p.c,p.r);const e={cell:p.cell,X,Y,r:p.r,c:p.c,t:0,delay:0,dur:.5,kind:'exit',s:S_*.9,rot:0,dir:Math.random()<.5?-1:1};
+    const [X,Y]=scr(p.c,p.r);const e={cell:p.cell,X,Y,r:p.r,c:p.c,t:0,delay:0,dur:.62,kind:'exit',s:S_*.9,rot:0,dir:Math.random()<.5?-1:1};
     if(p.cell.sp==='d')continue; /* yunusun kendisi sahnede uçar */
     const f=sceneFx.find(f=>inScene(f,p)&&!(f.r===p.r&&f.c===p.c));
     if(f&&f.t==='d'){e.delay=.45}
@@ -1099,7 +1103,7 @@ function endCheck(){
 
 /* ===== döngü ===== */
 /* SPEED: tüm animasyonların hız çarpanı (1 = eski hız) */
-const SPEED=1.7;
+const SPEED=1.25;
 function frame(now){
   try{frameBody(now)}catch(e){if(!frame.warned){frame.warned=1;setTimeout(()=>{throw e})}}
   if($('game').hidden){raf=0;return}
@@ -1319,7 +1323,7 @@ function win(){
   finale={t:0,next:.5,gap,left,manta:0,end:.6+left*gap+.9,done:()=>{
     jingle();
     $('winStars').innerHTML=[1,2,3].map(i=>`<span class="${i<=st?'':'off'}">★</span>`).join('');
-    $('winTitle').textContent=curMode==='daily'?'Günlük Dalış tamam!':curMode==='gold'?'Altın İnci!':L.n===LEVELS.length?'Koyun efendisi!':st===3?'Kusursuz!':'Bölüm tamam';
+    $('winTitle').textContent=curMode==='daily'?'Günlük Dalış tamam!':curMode==='gold'?'Altın İnci!':L.n===LEVELS.length?'İnciland efsanesi!':st===3?'Kusursuz!':'Bölüm tamam';
     $('winText').textContent=(extra?extra+' · ':'')+(left?`${left} hamle arttı.`:'Son hamlede bitirdin!');
     $('winCoins').textContent='+'+coins+' inci';
     const now=totalStars(),ns=ST.findIndex((s,i)=>!S.st[i]&&prev<s[1]&&now>=s[1]);
@@ -1468,7 +1472,7 @@ function reportRows(){const log=S.log||{};const keys=Object.keys(log).sort((a,b)
   return keys.map(k=>{const e=log[k],wr=e.a?Math.round(e.w/e.a*100):0;return {k:k==='G'?'Günlük':k[0]==='A'?'Altın '+k.slice(1):k,a:e.a,w:e.w,l:e.l,q:e.q,wr,tm:e.a?Math.round(e.t/e.a):0,ml:e.w?(e.m/e.w).toFixed(1):'-'}})}
 function openReport(){const rows=reportRows();
   $('rTable').innerHTML=rows.length?`<table><thead><tr><th>Böl.</th><th>Deneme</th><th>Kazanma</th><th>Ort. sn</th><th>Artan hamle</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.a>=3&&r.wr<34?'hard':r.a>=2&&r.wr===100&&+r.ml>6?'easy':''}"><td>${r.k}</td><td>${r.a}</td><td>%${r.wr}</td><td>${r.tm}</td><td>${r.ml}</td></tr>`).join('')}</tbody></table>`:'<p class="note" style="padding:10px">Henüz kayıt yok. Birkaç bölüm oynayınca burada görünür.</p>';
-  $('rText').value='İnci Koyu test raporu '+today()+'\n'+rows.map(r=>`${r.k}: ${r.a} deneme, ${r.w} kazanma, ${r.l} kayıp, ${r.q} yarıda bırakma, ort ${r.tm} sn, artan hamle ${r.ml}`).join('\n');
+  $('rText').value='İnciland test raporu '+today()+'\n'+rows.map(r=>`${r.k}: ${r.a} deneme, ${r.w} kazanma, ${r.l} kayıp, ${r.q} yarıda bırakma, ort ${r.tm} sn, artan hamle ${r.ml}`).join('\n');
   show($('ovSet'),false);show($('ovReport'),true)}
 $('reportBtn').onclick=openReport;$('rClose').onclick=()=>show($('ovReport'),false);
 $('rClear').onclick=()=>{S.log={};save();openReport()};

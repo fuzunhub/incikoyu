@@ -1,4 +1,4 @@
-# İnci Koyu
+# İnciland
 
 Fuzun Games'in su altı eşleştirme bulmacası. Deniz canlılarını kaydır, üçlü eşleştir; ağdaki canlıları kurtar, akıntıya kapılma, yavru balığını büyüt.
 
