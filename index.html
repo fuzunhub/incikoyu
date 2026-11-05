@@ -78,6 +78,18 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 .node{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;padding:0;font-size:24px;display:grid;place-items:center;
   background:radial-gradient(circle at 35% 30%,#2C86B0,var(--panel));border:3px solid #3D9CC6;box-shadow:0 5px 0 #021220}
 .map canvas.mapdeco{position:absolute;left:0;pointer-events:none}
+.overlay.story{background:radial-gradient(120% 90% at 50% 30%,rgba(10,62,94,.92),rgba(3,14,32,.96))}
+.scard{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px;align-items:stretch;animation:pop .35s ease-out}
+#storyArt{width:100%;aspect-ratio:600/380;height:auto}
+.sbubble{position:relative;background:#F7F1E3;color:#2A2140;border-radius:22px;padding:14px 18px 16px;box-shadow:0 6px 0 rgba(2,18,32,.55);min-height:150px}
+.sbubble::before{content:"";position:absolute;left:34px;top:-12px;border:12px solid transparent;border-bottom-color:#F7F1E3;border-top:0}
+.sbubble b{display:block;font-family:var(--display);font-weight:600;font-size:15px;color:#B07A1E;margin-bottom:4px;letter-spacing:.02em}
+.sbubble p{margin:0;font-size:16.5px;line-height:1.45;font-weight:600}
+.sdots{display:flex;justify-content:center;gap:7px}
+.sdots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
+.sdots i.on{background:#F6D77A}
+.sbtns{display:grid;grid-template-columns:1fr 2fr;gap:10px}.sbtns button{min-height:50px;font-size:18px}
+#optStory{margin-top:2px}
 .grainbar{position:relative;z-index:3;display:flex;align-items:center;gap:10px;margin:2px max(14px,env(safe-area-inset-left,0px)) 6px;padding:6px 14px 6px 8px;border-radius:18px;background:linear-gradient(180deg,rgba(6,36,59,.82),rgba(2,18,32,.82));border:1.5px solid rgba(246,215,122,.55);box-shadow:0 0 0 1px rgba(2,18,32,.4),0 6px 18px rgba(2,18,32,.35)}
 .gp{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 12px 2px rgba(255,240,200,.55),inset -3px -4px 6px rgba(120,230,240,.35)}
 .gtx{display:flex;flex-direction:column;line-height:1.05}
@@ -468,6 +480,7 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <div class="toggle">Ses efektleri<button type="button" id="optSnd" aria-pressed="true">Açık</button></div>
   <div class="toggle">Müzik<button type="button" id="optMus" aria-pressed="true">Açık</button></div>
   <div class="toggle">Titreşim<button type="button" id="optVib" aria-pressed="true">Açık</button></div>
+  <button type="button" id="optStory">Hikayeyi tekrar izle</button>
   <details class="dev"><summary>Geliştirici</summary><div class="devin">
   <div class="toggle"><span>Hızlı can<small>Test için: 30 saniyede 1 can</small></span><button type="button" id="optFast" aria-pressed="false">Kapalı</button></div>
   <div class="toggle"><span>Test modu<small>Tüm bölümler ve özellikler açık, can harcanmaz</small></span><button type="button" id="optOpen" aria-pressed="false">Kapalı</button></div>
@@ -477,6 +490,12 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <button class="cta" id="setClose" type="button">Kapat</button>
 </div></div>
 
+<div class="overlay story" id="ovStory" hidden><div class="scard">
+  <canvas id="storyArt" width="600" height="380" aria-hidden="true"></canvas>
+  <div class="sbubble"><b id="storyWho">Dede Kabuk</b><p id="storyText"></p></div>
+  <div class="sdots" id="storyDots" aria-hidden="true"></div>
+  <div class="sbtns"><button type="button" id="storySkip">Atla</button><button class="cta" type="button" id="storyNext">Devam</button></div>
+</div></div>
 <div class="overlay" id="ovFeat" hidden><div class="card">
   <canvas id="featArt" width="300" height="200" aria-hidden="true" style="width:150px;height:100px;align-self:center"></canvas>
   <span class="newtag">Yeni özellik</span>
@@ -1459,6 +1478,68 @@ function grainFly(){const bar=$('grainBar');if(!bar||$('home').hidden)return;con
   const f=document.createElement('div');f.className='gfly';f.style.left=(innerWidth/2)+'px';f.style.top=(innerHeight*.55)+'px';document.body.appendChild(f);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transform=`translate(${t.left+t.width/2-innerWidth/2}px,${t.top+t.height/2-innerHeight*.55}px) scale(.85)`;f.style.opacity='0'}));
   setTimeout(()=>{f.remove();bar.classList.remove('pop');void bar.offsetWidth;bar.classList.add('pop');try{chime(4);chime(7)}catch(e){}},820)}
+
+/* ===== Hikaye: Dede Kabuk anlatır; Minik'in adı oyuncunun verdiği addır ===== */
+if(!CanvasRenderingContext2D.prototype.roundRect)CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath()};
+const STORY0=[
+ {who:'Dede Kabuk',art:'turtle',t:()=>`Hoş geldin, İnci Avcısı. Ben Dede Kabuk; üç yüz yıldır bu sularda yaşarım. Bir zamanlar burası İnciland'dı ve Büyük İnci'nin ışığı bütün denizleri renkli tutardı.`},
+ {who:'Dede Kabuk',art:'shatter',t:()=>`Bir gece gri, sessiz bir gelgit geldi: Solgunluk. Büyük İnci 10.000 taneye parçalandı ve okyanusa saçıldı. Solgunluğun dokunduğu her yer rengini yitirdi.`},
+ {who:'Dede Kabuk',art:'pet',t:()=>`Ama son ışık kıvılcımı kurtuldu ve küçük bir balığın içine saklandı: ${pet().name}! Kayıp taneleri o hisseder. Senin her eşleştirmen bir taneyi küllerin altından kurtarır.`},
+ {who:'Dede Kabuk',art:'map',t:()=>`Her bölüm bir tane geri getirir. Yirmi tane bir bölgeyi yeniden renklendirir. Hadi evlat, 10.000 tanenin hepsini eve getirelim.`}];
+let storyI=0,storyPages=STORY0,storyRaf=0,storyTyped=0,storyT0=0,storyDone=null;
+function openStory(pages,done){storyPages=pages||STORY0;storyI=0;storyDone=done||null;show($('ovStory'),true);storyShow();
+  if(!storyRaf){const loop=n=>{if($('ovStory').hidden){storyRaf=0;return}drawStory(n/1000);storyRaf=requestAnimationFrame(loop)};storyRaf=requestAnimationFrame(loop)}}
+function storyShow(){const pg=storyPages[storyI];$('storyWho').textContent=pg.who;storyTyped=0;storyT0=performance.now();$('storyText').textContent='';
+  $('storyDots').innerHTML=storyPages.map((_,i)=>`<i class="${i===storyI?'on':''}"></i>`).join('');$('storyNext').textContent=storyI===storyPages.length-1?'Dalışa başla':'Devam'}
+function storyClose(){show($('ovStory'),false);S.story0=1;save();const d=storyDone;storyDone=null;if(d)d();else setTimeout(nextFeatPopup,300)}
+function storyAdvance(){const full=storyPages[storyI].t();if(storyTyped<full.length){storyTyped=full.length;$('storyText').textContent=full;return}
+  try{chime(storyI+3)}catch(e){}if(storyI<storyPages.length-1){storyI++;storyShow()}else storyClose()}
+function drawTurtle(c,x,y,s,t,talk){c.save();c.translate(x,y);c.scale(s,s);const bob=Math.sin(t*1.6)*4;c.translate(0,bob);
+  /* yüzgeçler */
+  c.fillStyle='#4E9A6B';for(const [fx,fy,r,sg] of [[-70,30,.6,1],[70,30,-.6,1],[-55,-40,-.4,.7],[55,-40,.4,.7]]){c.save();c.translate(fx,fy);c.rotate(r+Math.sin(t*2+fx)*.12);c.beginPath();c.ellipse(0,0,38*sg,14*sg,0,0,7);c.fill();c.restore()}
+  /* kabuk */
+  let g=c.createRadialGradient(-20,-30,10,0,0,95);g.addColorStop(0,'#8FCB7E');g.addColorStop(.6,'#4E8F5A');g.addColorStop(1,'#2D5C3C');c.fillStyle=g;c.beginPath();c.ellipse(0,0,88,70,0,0,7);c.fill();
+  c.strokeStyle='rgba(20,50,30,.55)';c.lineWidth=4;c.beginPath();c.moveTo(-30,-48);c.lineTo(30,-48);c.lineTo(48,0);c.lineTo(30,46);c.lineTo(-30,46);c.lineTo(-48,0);c.closePath();c.stroke();
+  for(const [a,b,c2,d] of [[-30,-48,-62,-30],[30,-48,62,-30],[48,0,86,0],[-48,0,-86,0],[30,46,60,40],[-30,46,-60,40]]){c.beginPath();c.moveTo(a,b);c.lineTo(c2,d);c.stroke()}
+  c.fillStyle='rgba(255,255,255,.18)';c.beginPath();c.ellipse(-28,-34,30,14,-.4,0,7);c.fill();
+  /* küçük yosun ve inci süsü */
+  c.strokeStyle='#7BE35A';c.lineWidth=3;c.beginPath();c.moveTo(20,-62);c.quadraticCurveTo(28+Math.sin(t*2)*4,-80,22,-94);c.stroke();
+  /* kafa */
+  c.save();c.translate(-104,-6+Math.sin(t*1.3)*2);g=c.createRadialGradient(-8,-10,4,0,0,40);g.addColorStop(0,'#9ED58C');g.addColorStop(1,'#4E9A6B');c.fillStyle=g;c.beginPath();c.ellipse(0,0,38,32,0,0,7);c.fill();
+  /* kaşlar (bilge, beyaz) */
+  c.strokeStyle='#F4F1E6';c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(-26,-20);c.quadraticCurveTo(-16,-28,-6,-22);c.stroke();
+  /* göz */
+  const bl=((t*.4)%1)<.05;c.fillStyle='#fff';c.beginPath();c.arc(-15,-8,9,0,7);c.fill();
+  if(bl){c.strokeStyle='#1C2A1E';c.lineWidth=3;c.beginPath();c.moveTo(-23,-8);c.lineTo(-7,-8);c.stroke()}else{c.fillStyle='#1C2A1E';c.beginPath();c.arc(-17,-7,5,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(-19,-9,1.8,0,7);c.fill()}
+  /* gözlük */
+  c.strokeStyle='#C99A3B';c.lineWidth=2.5;c.beginPath();c.arc(-15,-8,12,0,7);c.stroke();c.beginPath();c.moveTo(-3,-10);c.lineTo(12,-14);c.stroke();
+  /* ağız ve sakal */
+  const mo=talk?Math.abs(Math.sin(t*14))*5:0;c.fillStyle='#2D5C3C';c.beginPath();c.ellipse(-26,12,10,2+mo,0,0,7);c.fill();
+  c.fillStyle='#E8E4D6';c.beginPath();c.moveTo(-34,18);c.quadraticCurveTo(-30,40,-20,30);c.quadraticCurveTo(-18,40,-10,24);c.closePath();c.fill();
+  c.fillStyle='rgba(255,120,120,.35)';c.beginPath();c.arc(-4,8,6,0,7);c.fill();c.restore();c.restore()}
+function drawStory(t){const cv=$('storyArt'),c=cv.getContext('2d'),W=600,H=380,pg=storyPages[storyI],full=pg.t();
+  if(storyTyped<full.length){storyTyped=Math.min(full.length,Math.floor((performance.now()-storyT0)/22));$('storyText').textContent=full.slice(0,storyTyped)}
+  const talk=storyTyped<full.length;c.clearRect(0,0,W,H);
+  /* sahne zemini */
+  let g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1F8FB0');g.addColorStop(1,'#0A3E5E');c.fillStyle=g;c.beginPath();c.roundRect(0,0,W,H,28);c.fill();
+  c.save();c.beginPath();c.roundRect(0,0,W,H,28);c.clip();
+  c.globalAlpha=.12;c.fillStyle='#CFF7FF';for(let i=0;i<5;i++){const x=80+i*120+Math.sin(t*.5+i)*14;c.beginPath();c.moveTo(x-20,0);c.lineTo(x+20,0);c.lineTo(x+70,H);c.lineTo(x+10,H);c.fill()}c.globalAlpha=1;
+  c.fillStyle='#E9C98A';c.beginPath();c.moveTo(0,H-40);c.quadraticCurveTo(W/2,H-80,W,H-40);c.lineTo(W,H);c.lineTo(0,H);c.fill();
+  for(let i=0;i<9;i++){const bx=(i*83+t*20*(1+i%3))%W,by=H-((t*40+i*57)%H);c.strokeStyle='rgba(220,250,255,.5)';c.lineWidth=2;c.beginPath();c.arc(bx,by,3+i%4,0,7);c.stroke()}
+  const art=pg.art;
+  if(art==='shatter'){/* gri gelgit ve saçılan taneler */const fade=c.createLinearGradient(0,0,W,0);fade.addColorStop(0,'rgba(120,130,140,.75)');fade.addColorStop(.55+Math.sin(t)*.05,'rgba(120,130,140,.2)');fade.addColorStop(1,'rgba(120,130,140,0)');c.fillStyle=fade;c.fillRect(0,0,W,H);
+    for(let i=0;i<26;i++){const a=i*2.4,r=40+((t*30+i*23)%170);const x=W*.62+Math.cos(a)*r,y=H*.42+Math.sin(a)*r*.6;c.globalAlpha=Math.max(0,1-r/210);pearl(c,x,y,4+(i%3)*2);c.globalAlpha=1}
+    c.globalAlpha=.5+.3*Math.sin(t*3);pearl(c,W*.62,H*.42,26);c.globalAlpha=1;drawTurtle(c,170,250,.62,t,talk)}
+  else if(art==='pet'){const sp=c.createRadialGradient(W*.64,H*.45,0,W*.64,H*.45,120);sp.addColorStop(0,'rgba(255,245,200,.55)');sp.addColorStop(1,'rgba(255,245,200,0)');c.fillStyle=sp;c.fillRect(0,0,W,H);
+    drawPet(c,W*.64,H*.45+Math.sin(t*2)*8,150,petLv(),'happy',t);drawTurtle(c,150,262,.55,t,talk)}
+  else if(art==='map'){for(let i=0;i<5;i++){const x=W*.45+i*30,y=H*.72-i*48;pearl(c,x+Math.sin(i)*30,y,i===0?14:9)}
+    c.strokeStyle='rgba(255,240,200,.5)';c.setLineDash([4,10]);c.lineWidth=4;c.beginPath();for(let i=0;i<5;i++){const x=W*.45+i*30+Math.sin(i)*30,y=H*.72-i*48;i?c.lineTo(x,y):c.moveTo(x,y)}c.stroke();c.setLineDash([]);drawTurtle(c,170,250,.62,t,talk)}
+  else{pearl(c,W*.7,H*.36,30+Math.sin(t*2)*2);drawTurtle(c,250,230,.95,t,talk)}
+  c.restore()}
+function pearl(c,x,y,r){const g=c.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);g.addColorStop(0,'#fff');g.addColorStop(.5,'#F1EAF6');g.addColorStop(1,'#A79CC8');
+  const h=c.createRadialGradient(x,y,r*.5,x,y,r*2.4);h.addColorStop(0,'rgba(255,245,215,.5)');h.addColorStop(1,'rgba(255,245,215,0)');c.fillStyle=h;c.beginPath();c.arc(x,y,r*2.4,0,7);c.fill();c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill()}
+$('storyNext').onclick=storyAdvance;$('storySkip').onclick=storyClose;$('storyArt').onclick=storyAdvance;
+$('optStory').onclick=()=>{show($('ovSet'),false);openStory()};
 function renderMap(){
   renderGrain();const m=$('map'),H=(LEVELS.length+1)*GAP+50,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
   const cur=unlocked();let d='';for(let i=0;i<LEVELS.length;i++){const p=nodePos(i);d+=(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)}
@@ -1530,7 +1611,7 @@ function renderTop(){tickLives();checkCards(false);show($('cardDot'),(S.cards||[
   $('livesN').textContent=S.lives;$('livesT').textContent=S.lives>=maxLives()?'Dolu':fmt(nextLifeMs());
   $('coinsN').textContent=S.coins;$('starsN').textContent=totalStars();
   show($('reefDot'),ST.some((s,i)=>!S.st[i]&&totalStars()>=s[1]&&S.coins>=s[2]))}
-function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on){MUS.mode='calm';musVol()}setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();setTimeout(nextFeatPopup,700)}
+function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on){MUS.mode='calm';musVol()}setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();if(!S.story0)setTimeout(()=>openStory(),450);else setTimeout(nextFeatPopup,700)}
 function setTab(t){show($('playBar'),t==='map');[['tabMap','map','mapView'],['tabReef','reef','reefView'],['tabCards','cards','cardView']].forEach(([b,k,v])=>{$(b).setAttribute('aria-selected',t===k);show($(v),t===k)});if(t==='map')scrollToCur();if(t==='cards'){renderCards();S.cardSeen=(S.cards||[]).length;save();show($('cardDot'),false)}}
 $('tabMap').onclick=()=>setTab('map');$('tabCards').onclick=()=>setTab('cards');$('tabReef').onclick=()=>{renderReef();setTab('reef')};
 
