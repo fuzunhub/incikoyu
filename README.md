@@ -41,6 +41,7 @@ Bu depo oyunun yayındaki sürümünü tutar (`index.html`, `manifest.webmanifes
 
 ## Son güncellemeler
 
+- Düzeltme: "Sonraki bölüm" penceresinde Kapat artık haritaya döner
 - Altın Sandık: altın inciler artık birikiyor ve 5 tanesiyle sandık açılıyor
 - Bulmaca hedefleri adil hale getirildi (bulunabilir yollar) ve ipucu eklendi
 - Aletlere yeni isimler (Olta, Kılıçbalığı, Gayzer) ve dördüncü alet Gelgit; Olta'ya çekme animasyonu

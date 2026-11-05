@@ -2086,7 +2086,7 @@ function openLevel(i){const gOk=featOn('gold')&&!!S.stars[i];show($('lvGold'),gO
   $('lvGoldNote').textContent=g?'Bu bölümün altın incisi sende. İstersen yine oynayabilirsin.':'Aynı hedef, daha az hamle. Kazanırsan bölüme altın inci takılır ve 60 inci kazanırsın.';
   preSel.clear();renderBoosts();show($('lvBoosts'),lv.special!=='puzzle');
   $('lvPlay').onclick=()=>startLevel(i);$('lvGold').onclick=()=>startLevel(i,'gold');show($('ovLevel'),true)}
-$('lvClose').onclick=()=>show($('ovLevel'),false);
+$('lvClose').onclick=()=>{show($('ovLevel'),false);/* bitmiş bir bölümün ekranında kalmasın: haritaya dön */if(!$('game').hidden)toMap()};
 $('dailyBtn').onclick=()=>startLevel(0,'daily');
 $('petMap').onclick=openPet;$('petMap').onkeydown=e=>{if(e.key==='Enter')openPet()};
 $('petGame').onclick=()=>{petEvent('happy',1);blub(5)};
