@@ -1,0 +1,41 @@
+{
+ "name": "İnci Koyu",
+ "short_name": "İnci Koyu",
+ "description": "Fuzun Games'in su altı eşleştirme bulmacası.",
+ "id": "/",
+ "start_url": "./",
+ "scope": "./",
+ "display": "fullscreen",
+ "display_override": [
+  "fullscreen",
+  "standalone"
+ ],
+ "orientation": "portrait",
+ "background_color": "#03192B",
+ "theme_color": "#03192B",
+ "lang": "tr",
+ "categories": [
+  "games",
+  "puzzle"
+ ],
+ "icons": [
+  {
+   "src": "icons/i192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/i512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/m512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
