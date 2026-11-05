@@ -1,5 +1,5 @@
 /* İnci Koyu servis çalışanı: oyun internetsiz de açılır */
-const V='inci-koyu-bb1ed920';
+const V='inci-koyu-c6dc3f68';
 const SHELL=['./','index.html','manifest.webmanifest','icons/i192.png','icons/i512.png','icons/m512.png','icons/a180.png','icons/f32.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
