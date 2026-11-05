@@ -28,7 +28,7 @@ Fuzun Games'in su altı eşleştirme bulmacası. Büyük İnci 10.000 taneye bö
 - **İnci harcama:** bölüm öncesi güçlendiriciler (dalga, kabarcık, yunus, girdap, +3 hamle) ve oyun içi aletler: Olta (yukarıdan misina iner, tek kareyi çeker), Kılıçbalığı (bir satırı keser), Gayzer (bir sütunu fışkırtır), Gelgit (tahtadaki her şeyin yerini değiştirir).
 - **İnci Sarayı:** incilerle 10 parça kurulur (zemin, sütunlar, kubbe, kemer, bahçe, kuleler, fenerler, çeşme, inci taç). Kurtarılan bekçiler sarayda yüzer. **Hikaye Kitabı**'ndan izlenen sahneler tekrar açılır.
 - **Yavru balık:** besle, büyüt; 10 aşama (Yavru'dan Işık Taşıyıcı'ya), her aşama yeni bir avantaj ve görünüm verir. Adını sen koyarsın.
-- **Günlük Dalış**, **Altın İnci** meydan okuması, **Resif** istasyonları ve **Deniz ansiklopedisi** kartları.
+- **Günlük Dalış**, **Altın İnci** meydan okuması (5 altın inci = **Altın Sandık**: 400 inci, 2 can, 3 bedava güçlendirici), **Resif** istasyonları ve **Deniz ansiklopedisi** kartları.
 - Uyarlanabilir müzik (haritada dolu, oyunda kısık), dokunmatik titreşim, iPhone çentik ve tam ekran desteği.
 
 ## Yol haritası
@@ -41,6 +41,7 @@ Bu depo oyunun yayındaki sürümünü tutar (`index.html`, `manifest.webmanifes
 
 ## Son güncellemeler
 
+- Altın Sandık: altın inciler artık birikiyor ve 5 tanesiyle sandık açılıyor
 - Bulmaca hedefleri adil hale getirildi (bulunabilir yollar) ve ipucu eklendi
 - Aletlere yeni isimler (Olta, Kılıçbalığı, Gayzer) ve dördüncü alet Gelgit; Olta'ya çekme animasyonu
 - Özel objeler hem kendi renkleriyle eşleşince hem de herhangi bir yöne kaydırınca çalışıyor; 400 bölümün hamleleri buna göre yeniden ayarlandı

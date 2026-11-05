@@ -181,6 +181,15 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 .tool svg{width:26px!important;height:26px!important}
 .tool b{font-size:12.5px!important;line-height:1.1;white-space:nowrap}
 .tool i{font-size:11px!important}
+.gchest{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:150px;z-index:5;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 10px 5px;min-height:0;width:auto;border-radius:18px;background:rgba(2,18,32,.8);border:2px solid rgba(246,215,122,.6);box-shadow:0 4px 0 rgba(2,18,32,.6)}
+.gchest .gpi{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFFBE0,#FFD45A 45%,#B8860B);box-shadow:0 0 12px rgba(255,212,90,.7)}
+.gchest b{font-family:var(--display);font-weight:600;font-size:15px;color:#FFF1C2}
+.gchest small{font:700 9.5px var(--body);color:#F6D77A;white-space:nowrap}
+.gchest.ready{border-color:#FFE9A8;background:linear-gradient(180deg,#FFE9A8,#E9B949);animation:gch 1.4s ease-in-out infinite}
+.gchest.ready b,.gchest.ready small{color:#4A2E00}
+@keyframes gch{50%{transform:translateY(-4px) scale(1.05);box-shadow:0 0 22px rgba(255,212,90,.8),0 4px 0 #8A6400}}
+#ovChest.goldc .card{border-color:#FFE9A8;background:linear-gradient(180deg,#5A4410,#2A1E05)}
+.bst.free i{color:#7DF5E8}
 .grainbar{position:relative;z-index:3;display:flex;align-items:center;gap:10px;margin:2px max(14px,env(safe-area-inset-left,0px)) 6px;padding:6px 14px 6px 8px;border-radius:18px;background:linear-gradient(180deg,rgba(6,36,59,.82),rgba(2,18,32,.82));border:1.5px solid rgba(246,215,122,.55);box-shadow:0 0 0 1px rgba(2,18,32,.4),0 6px 18px rgba(2,18,32,.35)}
 .gp{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 12px 2px rgba(255,240,200,.55),inset -3px -4px 6px rgba(120,230,240,.35)}
 .gtx{display:flex;flex-direction:column;line-height:1.05}
@@ -488,6 +497,7 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
     <p>Canlıları topladıkça ve ağdan kurtardıkça kartları açılır. Her kartta gerçek bir bilgi var.</p>
     <div class="cards" id="cards"></div>
   </div>
+  <button type="button" class="gchest" id="goldChestBtn" hidden><span class="gpi"></span><b id="gpN">0</b><small id="gpS"></small></button>
   <div class="playbar" id="playBar"><canvas id="petMap" role="button" tabindex="0" aria-label="Yavru balığın"></canvas><button class="cta" id="mapPlay" type="button">Oyna · Bölüm 1</button><button id="dailyBtn" type="button"><span id="dailyT">Günlük Dalış</span><small id="dailyS"></small></button></div>
   <div class="tabs" role="tablist">
     <button type="button" role="tab" id="tabMap" aria-selected="true">Harita</button>
@@ -1623,7 +1633,7 @@ function win(){
   const firstWin=curMode!=='daily'&&!S.stars[L.n-1];
   if(curMode==='daily'){if(!dailyDone()){const r=dailyReward();coins=r.coins;extra=`Seri: ${r.streak} gün`}else extra='Bugünün ödülünü zaten aldın'}
   else{const first=!S.stars[L.n-1];coins=30+moves*5+(st===3?20:0);if(!first)coins=Math.round(coins/2);
-    if(curMode==='gold'){if(!(S.gold||[])[L.n-1]){S.gold=S.gold||[];S.gold[L.n-1]=1;coins+=60;extra='Altın inci kazandın!'}else extra='Altın inci zaten sende'}
+    if(curMode==='gold'){if(!(S.gold||[])[L.n-1]){S.gold=S.gold||[];S.gold[L.n-1]=1;S.gp=gpBal()+1;coins+=60;extra=`Altın inci kazandın! (${S.gp}/${GCOST} sandık için)`}else extra='Altın inci zaten sende'}
     if(L.special==='treasure')coins=Math.round(prog[0]*(petLv()>=5?1.2:1));
     if(petLv()>=2)coins=Math.round(coins*1.1);
     S.stars[L.n-1]=Math.max(S.stars[L.n-1]||0,st);S.coins+=coins}
@@ -1762,21 +1772,27 @@ function celebrateZone(z){if(Math.floor(z/5)!==PAGE){PAGE=Math.floor(z/5);render
     setTimeout(()=>{tag.remove();celebrating=null;openChest(z)},2600)},900)}
 /* bölge sandığı */
 let chestRaf=0,chestOpenT=0,chestZ=0,chestR=null;
-function openChest(z){chestZ=z;chestOpenT=0;const full=S.lives>=maxLives();chestR={coins:100+50*z+(full?50:0)+(petLv()>=4?50:0),life:full?0:1,bomb:1};
-  $('chestTitle').textContent=`Bölge ${z+1} sandığı`;$('chestList').innerHTML='';show($('chestTake'),false);show($('chestOpen'),true);show($('ovChest'),true);
+let chestGold=false;
+function openChest(z){const full=S.lives>=maxLives();openChestR(`Bölge ${z+1} sandığı`,{coins:100+50*z+(full?50:0)+(petLv()>=4?50:0),life:full?0:1,bomb:1},false);chestZ=z}
+/* altın sandık: 5 altın inciyle açılır */
+const GCOST=5,gpBal=()=>{if(S.gp===undefined){S.gp=(S.gold||[]).filter(Boolean).length}return S.gp};
+function openGoldChest(){if(gpBal()<GCOST)return;S.gp-=GCOST;save();const full=S.lives>=maxLives();const pool=['wave','bomb','dol','vort','moves'];const fb={};for(let i=0;i<3;i++){const id=pool[Math.floor(Math.random()*pool.length)];fb[id]=(fb[id]||0)+1}
+  openChestR('Altın Sandık',{coins:400+(full?100:0),life:full?0:2,bomb:0,free:fb},true);renderGoldBtn()}
+function openChestR(title,r,gold){chestZ=-1;chestOpenT=0;chestR=r;chestGold=gold;$('ovChest').classList.toggle('goldc',gold);
+  $('chestTitle').textContent=title;$('chestList').innerHTML='';show($('chestTake'),false);show($('chestOpen'),true);show($('ovChest'),true);
   if(!chestRaf){const loop=n=>{if($('ovChest').hidden){chestRaf=0;return}drawChest(n/1000);chestRaf=requestAnimationFrame(loop)};chestRaf=requestAnimationFrame(loop)}}
 function chestDoOpen(){if(chestOpenT)return;chestOpenT=performance.now();show($('chestOpen'),false);splash();setTimeout(()=>{try{jingle()}catch(e){}},250);buzz([30,20,60]);
-  const r=chestR,items=[[`+${r.coins} inci`,'coin'],r.life?['+1 can','heart']:null,['Kabarcık bombası','bomb']].filter(Boolean);
+  const r=chestR,items=[[`+${r.coins} inci`,'coin'],r.life?[`+${r.life} can`,'heart']:null,r.bomb?['Kabarcık bombası','bomb']:null,...Object.entries(r.free||{}).map(([id,n])=>[`Bedava ${BOOSTS.find(b=>b.id===id).name}${n>1?' ×'+n:''}`,'bomb'])].filter(Boolean);
   items.forEach(([t,k],i)=>setTimeout(()=>{const d=document.createElement('div');d.className='citem '+k;d.innerHTML=`<span></span>${t}`;$('chestList').appendChild(d);try{chime(5+i*2)}catch(e){}},700+i*320));
   setTimeout(()=>show($('chestTake'),true),700+items.length*320)}
-function chestTake(){const r=chestR;S.coins+=r.coins;if(r.life)addLife();S.boostB=(S.boostB||0)+r.bomb;save();show($('ovChest'),false);renderTop();checkZones()}
+function chestTake(){const r=chestR;S.coins+=r.coins;for(let i=0;i<(r.life||0);i++)addLife();S.boostB=(S.boostB||0)+(r.bomb||0);S.freeB=S.freeB||{};for(const [id,n] of Object.entries(r.free||{}))S.freeB[id]=(S.freeB[id]||0)+n;save();show($('ovChest'),false);renderTop();checkZones()}
 function drawChest(t){const cv=$('chestArt'),c=cv.getContext('2d'),W=400,H=300;c.clearRect(0,0,W,H);
   const op=chestOpenT?Math.min(1,(performance.now()-chestOpenT)/450):0,sh=chestOpenT?0:Math.sin(t*18)*(Math.sin(t*2.2)>.6?3:0);
   const g0=c.createRadialGradient(200,170,10,200,170,190);g0.addColorStop(0,`rgba(255,236,170,${.25+op*.5})`);g0.addColorStop(1,'rgba(255,236,170,0)');c.fillStyle=g0;c.fillRect(0,0,W,H);
   c.save();c.translate(200+sh,190);
   /* gövde */
-  let g=c.createLinearGradient(0,-40,0,70);g.addColorStop(0,'#B5732E');g.addColorStop(1,'#6E3F16');c.fillStyle=g;c.beginPath();c.roundRect(-110,-30,220,100,14);c.fill();
-  c.fillStyle='#E9B949';for(const x of [-110,-14,96])c.fillRect(x,-30,14,100);c.fillRect(-110,-34,220,12);
+  let g=c.createLinearGradient(0,-40,0,70);g.addColorStop(0,chestGold?'#FFE38A':'#B5732E');g.addColorStop(1,chestGold?'#C9921E':'#6E3F16');c.fillStyle=g;c.beginPath();c.roundRect(-110,-30,220,100,14);c.fill();
+  c.fillStyle=chestGold?'#FFF6D0':'#E9B949';for(const x of [-110,-14,96])c.fillRect(x,-30,14,100);c.fillRect(-110,-34,220,12);
   c.fillStyle='#FFF1C2';c.beginPath();c.roundRect(-16,-6,32,30,6);c.fill();c.fillStyle='#6E3F16';c.beginPath();c.arc(0,6,5,0,7);c.fill();
   /* ışık ve inciler */
   if(op>0){c.save();c.globalCompositeOperation='lighter';for(let i=0;i<7;i++){const a=-Math.PI/2+(i-3)*.28;c.fillStyle=`rgba(255,240,190,${.18*op})`;c.beginPath();c.moveTo(-60,-30);c.lineTo(60,-30);c.lineTo(Math.cos(a)*260,Math.sin(a)*260);c.closePath();c.fill()}c.restore();
@@ -1863,16 +1879,17 @@ $('optStory').onclick=()=>{show($('ovSet'),false);openStory()};
 const BOOSTS=[{id:'wave',name:'Dalga',cost:60,sp:'h'},{id:'bomb',name:'Kabarcık',cost:90,sp:'b'},{id:'dol',name:'Yunus',cost:120,sp:'d'},{id:'vort',name:'Girdap',cost:180,sp:'c'},{id:'moves',name:'+3 hamle',cost:120}];
 const TOOLS={hammer:{cost:50,name:'Olta',tip:'Oltayı hangi kareye atalım? Çekmek istediğin kareye dokun.'},row:{cost:90,name:'Kılıçbalığı',tip:'Kılıçbalığı hangi sırayı keseceğini bekliyor: o sıradan bir kareye dokun.'},col:{cost:90,name:'Gayzer',tip:'Gayzer hangi sütundan fışkıracak? O sütundan bir kareye dokun.'},tide:{cost:70,name:'Gelgit',tip:''}};
 let preSel=new Set(),toolSel=null,tipSaved='',freeHammer=false,puzOff=false,hintSaid=0;
-const preCost=()=>[...preSel].reduce((a,id)=>a+BOOSTS.find(b=>b.id===id).cost,0);
+const preCost=()=>[...preSel].reduce((a,id)=>a+((S.freeB||{})[id]?0:BOOSTS.find(b=>b.id===id).cost),0);
 function renderBoosts(){const g=$('lvBgrid');g.innerHTML='';$('lvCoins').textContent='● '+S.coins+' inci';
   for(const bo of BOOSTS){const b=document.createElement('button');b.type='button';b.className='bst'+(preSel.has(bo.id)?' on':'');
     const cv=document.createElement('canvas');cv.width=cv.height=68;const c=cv.getContext('2d');
     if(bo.sp)drawPiece(c,{k:bo.sp==='d'?1:2,sp:bo.sp,ph:0},4,4,60,.3);else{c.fillStyle='#FFD45A';c.font='700 34px Fredoka, system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText('+3',34,36)}
     b.appendChild(cv);b.insertAdjacentHTML('beforeend',`<b>${bo.name}</b><i>${bo.cost}</i>`);
-    b.disabled=!preSel.has(bo.id)&&S.coins<preCost()+bo.cost;
+    const fr=(S.freeB||{})[bo.id]||0;if(fr){b.classList.add('free');b.querySelector('i').textContent=`Bedava ×${fr}`}
+    b.disabled=!fr&&!preSel.has(bo.id)&&S.coins<preCost()+bo.cost;
     b.onclick=()=>{preSel.has(bo.id)?preSel.delete(bo.id):preSel.add(bo.id);try{chime(preSel.size+3)}catch(e){}renderBoosts()};g.appendChild(b)}
   const pc=preCost();$('lvPlay').textContent=pc?`Oyna · ${pc} inci`:'Oyna'}
-function applyBoosts(){if(!preSel.size)return;const cost=preCost();if(S.coins<cost){preSel.clear();return}S.coins-=cost;
+function applyBoosts(){if(!preSel.size)return;const cost=preCost();if(S.coins<cost){preSel.clear();return}S.coins-=cost;S.freeB=S.freeB||{};for(const id of preSel)if(S.freeB[id])S.freeB[id]--;
   const cs=[];for(let r=1;r<ROWS-1;r++)for(let c=0;c<COLS;c++){const x=G.b[r][c];if(isP(x)&&!x.sp&&!x.net)cs.push([r,c])}
   for(const id of preSel){const bo=BOOSTS.find(b=>b.id===id);if(bo.sp&&cs.length){const [r,c]=cs.splice(Math.floor(rng()*cs.length),1)[0];G.b[r][c].sp=bo.sp==='h'?(rng()<.5?'h':'v'):bo.sp}
     if(id==='moves')moves+=3}
@@ -1997,8 +2014,13 @@ function openBook(){const L2=$('bookList');L2.innerHTML='';const items=[['Açıl
   for(const [t2,fn] of items){const b=document.createElement('button');b.type='button';b.textContent=t2;b.onclick=()=>{show($('ovBook'),false);fn()};L2.appendChild(b)}
   if(!(S.rescued||[]).length)L2.insertAdjacentHTML('beforeend','<p class="note">Bekçileri kurtardıkça yeni sahneler buraya eklenir.</p>');show($('ovBook'),true)}
 $('bookBtn').onclick=openBook;$('bookClose').onclick=()=>show($('ovBook'),false);
+
+function renderGoldBtn(){const b=$('goldChestBtn');if(!b)return;const on=featOn('gold');show(b,on);if(!on)return;const n=gpBal(),ready=n>=GCOST;
+  $('gpN').textContent=`${n}/${GCOST}`;$('gpS').textContent=ready?'Altın Sandık hazır!':'Altın Sandık';b.classList.toggle('ready',ready)}
+$('goldChestBtn').onclick=()=>{if(gpBal()>=GCOST)openGoldChest();else{$('featTitle').textContent='Altın Sandık';$('featText').textContent=`Bitirdiğin bölümlere haritadan dokunup "Altın İnci"yi seç: daha az hamleyle bitirirsen altın inci kazanırsın. ${GCOST} altın inci biriktirince Altın Sandık açılır: bol inci, can ve bedava güçlendiriciler.`;
+  const c=$('featArt').getContext('2d');c.clearRect(0,0,300,200);pearl(c,150,100,40);show($('featGo'),false);show($('ovFeat'),true)}};
 function renderMap(){
-  renderGrain();const P0=PG0(),PN=PGN(),m=$('map'),H=(PN+1)*GAP+50+MTOP,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
+  renderGrain();renderGoldBtn();const P0=PG0(),PN=PGN(),m=$('map'),H=(PN+1)*GAP+50+MTOP,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
   const cur=unlocked();let d='';for(let i=P0;i<P0+PN;i++){const p=nodePos(i);d+=(i>P0?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)}
   try{mapDeco(W,H).forEach(cv=>m.appendChild(cv))}catch(e){}
   for(let z=P0/20;z<(P0+PN)/20;z++){const i0=z*20,i1=Math.min(P0+PN-1,z*20+19),a=nodePos(i1),b=nodePos(i0);m.insertAdjacentHTML('beforeend',`<div class="zone zc${zoneOf(i0)}" style="top:${a.y-60}px;height:${b.y-a.y+120}px"><span>Bölge ${z+1} · ${i0+1}–${i1+1}</span></div>`)}
@@ -2033,7 +2055,7 @@ const doneN=()=>S.stars.filter(Boolean).length;
 const featOn=id=>!!S.allOpen||doneN()>=FEAT.find(f=>f.id===id).lv;
 function applyFeat(){show($('petMap'),featOn('pet'));show($('tabReef'),featOn('reef'));show($('dailyBtn'),featOn('daily'));show($('tabCards'),featOn('cards'))}
 function nextFeatPopup(){if(S.allOpen)return;S.featSeen=S.featSeen||[];const f=FEAT.find(f=>featOn(f.id)&&!S.featSeen.includes(f.id));if(!f)return;
-  S.featSeen.push(f.id);save();$('featTitle').textContent=f.title;$('featText').textContent=f.text;
+  S.featSeen.push(f.id);save();show($('featGo'),true);$('featTitle').textContent=f.title;$('featText').textContent=f.text;
   const c=$('featArt').getContext('2d');c.clearRect(0,0,300,200);
   if(f.id==='pet')drawPet(c,150,105,170,0,'happy',1);else if(f.id==='reef')c.drawImage(stArt(0,true),95,45,110,110);
   else if(f.id==='daily'){c.fillStyle='#FFC857';c.beginPath();c.arc(150,100,62,0,7);c.fill();c.fillStyle='#6B4300';c.font='600 56px Fredoka, system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(String(new Date().getDate()),150,104)}
