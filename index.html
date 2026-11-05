@@ -162,6 +162,18 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 .node.sp-puzzle .bk{background:#B8A4FF;color:#21124A}.node.sp-puzzle:not(.done){border-color:#D3C6FF!important}
 .node.sp-rescue .bk{background:#7DF5E8;color:#063B37}.node.sp-rescue:not(.done){border-color:#B5FFF6!important}
 #game.treasure{background:radial-gradient(120% 70% at 50% 35%,rgba(255,212,90,.28),transparent 70%)}
+#palCv{width:100%;height:auto;aspect-ratio:600/440;border-radius:20px;box-shadow:0 6px 0 rgba(2,18,32,.5)}
+.reef h2 small{font:700 13px var(--body);color:#F6D77A;margin-left:6px}
+.palnote{margin:0;font-size:13.5px;color:#D6F6FF}
+.parts{display:flex;flex-direction:column;gap:7px}
+.part{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:14px;background:rgba(2,18,32,.55);border:2px solid var(--line)}
+.part b{font-family:var(--display);font-weight:600;font-size:15px}
+.part.own{border-color:rgba(125,245,232,.5)}.part .ok{color:var(--aqua);font-weight:700;font-size:13px}
+.part.next{border-color:#F6D77A;background:linear-gradient(180deg,rgba(246,215,122,.16),rgba(2,18,32,.55))}
+.part.next button{min-height:0;padding:7px 12px;font-size:14px;width:auto}
+.part.lockd{opacity:.55}.part.lockd span{font-size:13px;color:#F6D77A}
+.bookbtn{background:linear-gradient(180deg,#FFF0B0,#FFD45A);color:#5A3A00;border-color:#B8860B;box-shadow:0 5px 0 #8A6400}
+.chap{display:flex;flex-direction:column;gap:8px}
 .grainbar{position:relative;z-index:3;display:flex;align-items:center;gap:10px;margin:2px max(14px,env(safe-area-inset-left,0px)) 6px;padding:6px 14px 6px 8px;border-radius:18px;background:linear-gradient(180deg,rgba(6,36,59,.82),rgba(2,18,32,.82));border:1.5px solid rgba(246,215,122,.55);box-shadow:0 0 0 1px rgba(2,18,32,.4),0 6px 18px rgba(2,18,32,.35)}
 .gp{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F4EEF6 40%,#C9C3D9 75%,#8E8AAE);box-shadow:0 0 12px 2px rgba(255,240,200,.55),inset -3px -4px 6px rgba(120,230,240,.35)}
 .gtx{display:flex;flex-direction:column;line-height:1.05}
@@ -455,7 +467,12 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <div class="grainbar" id="grainBar" aria-live="polite"><span class="gp" aria-hidden="true"></span><div class="gtx"><small>İnci Tanesi</small><b><span id="grainN">0</span><i> / 10.000</i></b></div><div class="gzone"><small id="grainZone">Bölge 1</small><div class="gbar"><i id="grainFill"></i></div></div></div>
   <div class="mapwrap" id="mapView"><div class="dhead" id="dHead"></div><div class="map" id="map"></div></div>
   <div class="reef" id="reefView" hidden>
-    <h2>Resifi canlandır</h2>
+    <h2>İnci Sarayı <small id="palLv"></small></h2>
+    <canvas id="palCv" width="600" height="440" aria-label="İnci Sarayı"></canvas>
+    <p class="palnote" id="palNote"></p>
+    <div class="parts" id="palParts"></div>
+    <button type="button" id="bookBtn" class="bookbtn">Hikaye Kitabı</button>
+    <h2 style="margin-top:8px">Resif istasyonları</h2>
     <p>Yıldız topladıkça yeni istasyonlar açılır. İncilerle onardığın her istasyon kalıcı bir avantaj verir.</p>
     <div id="stations" style="display:flex;flex-direction:column;gap:10px"></div>
   </div>
@@ -467,7 +484,7 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <div class="playbar" id="playBar"><canvas id="petMap" role="button" tabindex="0" aria-label="Yavru balığın"></canvas><button class="cta" id="mapPlay" type="button">Oyna · Bölüm 1</button><button id="dailyBtn" type="button"><span id="dailyT">Günlük Dalış</span><small id="dailyS"></small></button></div>
   <div class="tabs" role="tablist">
     <button type="button" role="tab" id="tabMap" aria-selected="true">Harita</button>
-    <button type="button" role="tab" id="tabReef" aria-selected="false">Resif<span class="dot" id="reefDot" hidden></span></button>
+    <button type="button" role="tab" id="tabReef" aria-selected="false">Saray<span class="dot" id="reefDot" hidden></span></button>
     <button type="button" role="tab" id="tabCards" aria-selected="false">Kartlar<span class="dot" id="cardDot" hidden></span></button>
   </div>
 </div>
@@ -569,6 +586,11 @@ addEventListener('error',e=>{try{const s=JSON.parse(localStorage.getItem('inciko
   <button class="cta" id="setClose" type="button">Kapat</button>
 </div></div>
 
+<div class="overlay" id="ovBook" hidden><div class="card">
+  <h2>Hikaye Kitabı</h2>
+  <div class="chap" id="bookList"></div>
+  <button id="bookClose" type="button">Kapat</button>
+</div></div>
 <div class="overlay" id="ovChest" hidden><div class="card chestc">
   <h2 id="chestTitle">Bölge sandığı</h2>
   <canvas id="chestArt" width="400" height="300" aria-hidden="true"></canvas>
@@ -1209,7 +1231,7 @@ function startLevel(i,mode){document.body.classList.add('ingame');
   /* giriş: objeler yüzeyden sallanarak batar */
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const x=G.b[r][c];if(isP(x))x.fy=r-ROWS-1-((c*3+r)%5)*.25}
   introT0=performance.now();
-  prog=L.goals.map(()=>0);moves=L.moves;toolSel=null;applyBoosts();used=0;over=false;freeUsed=false;phase='idle';sel=null;drag=null;hintMove=null;chain=0;
+  prog=L.goals.map(()=>0);moves=L.moves;toolSel=null;applyBoosts();freeHammer=petLv()>=9;if(L.boss&&petLv()>=7)prog[0]=10;if(petLv()>=8&&!puz)moves+=1;used=0;over=false;freeUsed=false;phase='idle';sel=null;drag=null;hintMove=null;chain=0;
   exits=[];scenes=[];parts=[];floats=[];ripples=[];flyers=[];lights=[];darkK=0;idleT=0;fallHold=.15;dim=0;MOOD=0;finale=null;
   drifted=false;
   $('game').classList.toggle('treasure',L.special==='treasure');
@@ -1556,7 +1578,7 @@ function win(){
   if(curMode==='daily'){if(!dailyDone()){const r=dailyReward();coins=r.coins;extra=`Seri: ${r.streak} gün`}else extra='Bugünün ödülünü zaten aldın'}
   else{const first=!S.stars[L.n-1];coins=30+moves*5+(st===3?20:0);if(!first)coins=Math.round(coins/2);
     if(curMode==='gold'){if(!(S.gold||[])[L.n-1]){S.gold=S.gold||[];S.gold[L.n-1]=1;coins+=60;extra='Altın inci kazandın!'}else extra='Altın inci zaten sende'}
-    if(L.special==='treasure')coins=prog[0];
+    if(L.special==='treasure')coins=Math.round(prog[0]*(petLv()>=5?1.2:1));
     if(petLv()>=2)coins=Math.round(coins*1.1);
     S.stars[L.n-1]=Math.max(S.stars[L.n-1]||0,st);S.coins+=coins}
   save();petXP(curMode==='normal'?1:2);petEvent('cheer',5);
@@ -1575,8 +1597,7 @@ function win(){
     show($('winSt'),ns>=0||nc>0);$('winSt').textContent=[ns>=0?`Resifte yeni istasyon açıldı: ${ST[ns][0]}`:'',nc>0?`Ansiklopedide ${nc} yeni kart açıldı`:''].filter(Boolean).join(' · ');
     show($('winNext'),curMode==='normal'&&L.n<LEVELS.length);
     if(L.boss&&firstWin){S.rescued=S.rescued||[];if(!S.rescued.includes(L.boss.id)){S.rescued.push(L.boss.id);save()}const B=L.boss;$('winTitle').textContent=`${B.name} kurtuldu!`;
-      openStory([{who:B.name,art:'bossfree',boss:B.id,t:()=>`Neredeyim? Her şey gri bir sis gibiydi... Sonra eşleştirmelerinin ışığı geldi ve sis dağıldı. Teşekkürler, İnci Avcısı!`},
-        {who:'Dede Kabuk',art:'bossfree',boss:B.id,t:()=>`${B.name} artık Solgunluğun elinde değil. Kurtulan bekçiler İnci Sarayı'nda toplanacak. ${pet().name} de çok sevindi; hadi, önümüzdeki diyar seni bekliyor.`}],()=>show($('ovWin'),true))}
+      openStory(bossStory(B),()=>show($('ovWin'),true))}
     else show($('ovWin'),true)}};
 }
 function lose(){
@@ -1695,7 +1716,7 @@ function celebrateZone(z){if(Math.floor(z/5)!==PAGE){PAGE=Math.floor(z/5);render
     setTimeout(()=>{tag.remove();celebrating=null;openChest(z)},2600)},900)}
 /* bölge sandığı */
 let chestRaf=0,chestOpenT=0,chestZ=0,chestR=null;
-function openChest(z){chestZ=z;chestOpenT=0;const full=S.lives>=maxLives();chestR={coins:100+50*z+(full?50:0),life:full?0:1,bomb:1};
+function openChest(z){chestZ=z;chestOpenT=0;const full=S.lives>=maxLives();chestR={coins:100+50*z+(full?50:0)+(petLv()>=4?50:0),life:full?0:1,bomb:1};
   $('chestTitle').textContent=`Bölge ${z+1} sandığı`;$('chestList').innerHTML='';show($('chestTake'),false);show($('chestOpen'),true);show($('ovChest'),true);
   if(!chestRaf){const loop=n=>{if($('ovChest').hidden){chestRaf=0;return}drawChest(n/1000);chestRaf=requestAnimationFrame(loop)};chestRaf=requestAnimationFrame(loop)}}
 function chestDoOpen(){if(chestOpenT)return;chestOpenT=performance.now();show($('chestOpen'),false);splash();setTimeout(()=>{try{jingle()}catch(e){}},250);buzz([30,20,60]);
@@ -1795,7 +1816,7 @@ $('optStory').onclick=()=>{show($('ovSet'),false);openStory()};
 /* ===== İnci harcama: bölüm öncesi güçlendiriciler ve oyun içi aletler ===== */
 const BOOSTS=[{id:'wave',name:'Dalga',cost:60,sp:'h'},{id:'bomb',name:'Kabarcık',cost:90,sp:'b'},{id:'dol',name:'Yunus',cost:120,sp:'d'},{id:'vort',name:'Girdap',cost:180,sp:'c'},{id:'moves',name:'+3 hamle',cost:120}];
 const TOOLS={hammer:{cost:50,name:'Çekiç',tip:'Kırmak istediğin kareye dokun.'},row:{cost:90,name:'Satır',tip:'Temizlemek istediğin satırdan bir kareye dokun.'},col:{cost:90,name:'Sütun',tip:'Temizlemek istediğin sütundan bir kareye dokun.'}};
-let preSel=new Set(),toolSel=null,tipSaved='';
+let preSel=new Set(),toolSel=null,tipSaved='',freeHammer=false;
 const preCost=()=>[...preSel].reduce((a,id)=>a+BOOSTS.find(b=>b.id===id).cost,0);
 function renderBoosts(){const g=$('lvBgrid');g.innerHTML='';$('lvCoins').textContent='● '+S.coins+' inci';
   for(const bo of BOOSTS){const b=document.createElement('button');b.type='button';b.className='bst'+(preSel.has(bo.id)?' on':'');
@@ -1810,12 +1831,12 @@ function applyBoosts(){if(!preSel.size)return;const cost=preCost();if(S.coins<co
   for(const id of preSel){const bo=BOOSTS.find(b=>b.id===id);if(bo.sp&&cs.length){const [r,c]=cs.splice(Math.floor(rng()*cs.length),1)[0];G.b[r][c].sp=bo.sp==='h'?(rng()<.5?'h':'v'):bo.sp}
     if(id==='moves')moves+=3}
   preSel.clear();save()}
-function renderTools(){document.querySelectorAll('#tools .tool').forEach(b=>{const t=b.dataset.t;b.classList.toggle('on',toolSel===t);b.disabled=toolSel!==t&&S.coins<TOOLS[t].cost})}
+function renderTools(){document.querySelectorAll('#tools .tool').forEach(b=>{const t=b.dataset.t,fr=t==='hammer'&&freeHammer;b.classList.toggle('on',toolSel===t);b.querySelector('i').textContent=fr?'Bedava':TOOLS[t].cost;b.disabled=toolSel!==t&&!fr&&S.coins<TOOLS[t].cost})}
 function pickTool(t){if(over||phase!=='idle')return;if(toolSel===t){toolSel=null;$('tip').textContent=tipSaved}else{if(!toolSel)tipSaved=$('tip').textContent;toolSel=t;$('tip').textContent=TOOLS[t].tip+' Vazgeçmek için alete tekrar dokun.';sel=null;try{tone(700,.1,'triangle',.05)}catch(e){}}renderTools()}
-function useTool(r,c){const t=toolSel,T=TOOLS[t];if(S.coins<T.cost){toolSel=null;renderTools();return}
+function useTool(r,c){const t=toolSel,T=TOOLS[t],cost=t==='hammer'&&freeHammer?0:T.cost;if(S.coins<cost){toolSel=null;renderTools();return}
   const cells=[];if(t==='hammer')cells.push([r,c]);else if(t==='row')for(let i=0;i<COLS;i++)cells.push([r,i]);else for(let i=0;i<ROWS;i++)cells.push([i,c]);
   const res=resolve(G,cells,[],t==='hammer'?[[r,c]]:cells,rng);if(t!=='hammer')res.fx.push({t:t==='row'?'h':'v',r,c});
-  S.coins-=T.cost;saveSoon();toolSel=null;$('tip').textContent=tipSaved;renderTools();
+  S.coins-=cost;if(t==='hammer'&&freeHammer)freeHammer=false;saveSoon();toolSel=null;$('tip').textContent=tipSaved;renderTools();
   if(t==='hammer'){shakeT=Math.max(shakeT,.18);crunch();buzz(25)}
   chain=0;drifted=false;handle(res,false);phase='resolve'}
 document.querySelectorAll('#tools .tool').forEach(b=>b.onclick=()=>pickTool(b.dataset.t));
@@ -1860,6 +1881,62 @@ function drawBoss(c,id,x,y,s,t,state){const u=s/100,free=state==='free',hit=boss
   if(hit){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.arc(0,4*u,40*u,0,7);c.fill()}
   c.restore()}
 function paintBoss(dt,t){if(!L||!L.boss)return;if(bossHitT>0)bossHitT-=dt;if(bossAtkT>0)bossAtkT=Math.max(0,bossAtkT-dt*1.4);const cv=$('bossCv');if(!cv)return;const c=cv.getContext('2d');c.clearRect(0,0,76,76);drawBoss(c,L.boss.id,38,42,64,t,'angry')}
+
+/* ===== İnci Sarayı: incilerle parça parça kurulur; kurtarılan bekçiler burada yaşar ===== */
+const PARTS=[{id:'zemin',name:'Kabuk zemin',cost:100},{id:'sutun',name:'İnci sütunlar',cost:200},{id:'kubbe',name:'Sedef kubbe',cost:350},{id:'kemer',name:'Yosun kemer',cost:300},{id:'bahce',name:'Mercan bahçesi',cost:400},
+  {id:'kuleL',name:'Sol deniz kulesi',cost:500},{id:'kuleR',name:'Sağ deniz kulesi',cost:500},{id:'fener',name:'Fener balığı ışıkları',cost:600},{id:'cesme',name:'Kabarcık çeşmesi',cost:700},{id:'tac',name:'İnci taç',cost:900}];
+const palOwn=id=>(S.pal||[]).includes(id);
+function bossStory(B){return [{who:B.name,art:'bossfree',boss:B.id,t:()=>`Neredeyim? Her şey gri bir sis gibiydi... Sonra eşleştirmelerinin ışığı geldi ve sis dağıldı. Teşekkürler, İnci Avcısı!`},
+  {who:'Dede Kabuk',art:'bossfree',boss:B.id,t:()=>`${B.name} artık Solgunluğun elinde değil ve İnci Sarayı'na yerleşti. ${pet().name} de çok sevindi; hadi, önümüzdeki diyar seni bekliyor.`}]}
+function renderPalace(){const n=(S.pal||[]).length;$('palLv').textContent=`${n}/${PARTS.length}`;const rs=(S.rescued||[]).length;
+  $('palNote').textContent=rs?`Sarayda ${rs} bekçi yaşıyor. Yeni bekçiler her diyarın 100. bölümünde seni bekliyor.`:'Kurtardığın bekçiler burada yaşayacak. İlki 100. bölümde.';
+  const box=$('palParts');box.innerHTML='';let nextShown=false;
+  for(const p of PARTS){const own=palOwn(p.id),d=document.createElement('div');d.className='part'+(own?' own':'');
+    if(own)d.innerHTML=`<b>${p.name}</b><span class="ok">Kuruldu ✓</span>`;
+    else if(!nextShown){nextShown=true;const can=S.coins>=p.cost;d.classList.add('next');d.innerHTML=`<b>${p.name}</b><button type="button" class="cta" ${can?'':'disabled'}>Kur · ${p.cost} inci</button>`;
+      d.querySelector('button').onclick=()=>{if(S.coins<p.cost)return;S.coins-=p.cost;S.pal=(S.pal||[]).concat(p.id);palBuildT=1;palBuilt=p.id;save();try{jingle()}catch(e){}buzz([20,30,40]);renderTop();renderPalace()}}
+    else{d.classList.add('lockd');d.innerHTML=`<b>${p.name}</b><span>${p.cost} inci</span>`}
+    box.appendChild(d)}}
+let palBuildT=0,palBuilt='';
+function paintPalace(dt,t){const cv=$('palCv');if(!cv||$('reefView').hidden)return;const c=cv.getContext('2d'),W=600,H=440;if(palBuildT>0)palBuildT=Math.max(0,palBuildT-dt*.6);c.clearRect(0,0,W,H);
+  let g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#2AB3CF');g.addColorStop(.6,'#0E5E8C');g.addColorStop(1,'#0A3E5E');c.fillStyle=g;c.beginPath();c.roundRect(0,0,W,H,26);c.fill();
+  c.save();c.beginPath();c.roundRect(0,0,W,H,26);c.clip();
+  c.globalAlpha=.13;c.fillStyle='#E8FCFF';for(let i=0;i<5;i++){const x=70+i*120+Math.sin(t*.4+i)*12;c.beginPath();c.moveTo(x-18,0);c.lineTo(x+18,0);c.lineTo(x+60,H);c.lineTo(x+4,H);c.fill()}c.globalAlpha=1;
+  c.fillStyle='#E9C98A';c.beginPath();c.moveTo(0,H-46);c.quadraticCurveTo(W/2,H-86,W,H-46);c.lineTo(W,H);c.lineTo(0,H);c.fill();
+  const cx=W/2,base=H-70,on=id=>palOwn(id),pop=id=>palBuilt===id&&palBuildT>0?1+Math.sin(palBuildT*Math.PI)*.08:1;
+  const ghost=(fn)=>{c.save();c.globalAlpha=.16;c.setLineDash([6,6]);fn(true);c.restore()};
+  const part=(id,fn)=>{if(on(id)){c.save();const k=pop(id);c.translate(cx,base);c.scale(k,k);c.translate(-cx,-base);fn(false);c.restore()}else ghost(fn)};
+  const pearlCol=(y0,y1)=>{const q=c.createLinearGradient(0,y0,0,y1);q.addColorStop(0,'#FFFFFF');q.addColorStop(1,'#C9C3D9');return q};
+  /* bahçe */part('bahce',gh=>{for(const [x,col,sc] of [[70,'#FF5E9A',1],[120,'#FF9A2E',.8],[480,'#B983FF',.9],[535,'#FF6B6B',1.1]]){c.strokeStyle=gh?'#fff':col;c.lineWidth=7*sc;c.lineCap='round';
+      const br=(l,a,d)=>{if(d>3)return;c.beginPath();c.moveTo(0,0);c.lineTo(Math.sin(a)*l,-Math.cos(a)*l);c.stroke();c.save();c.translate(Math.sin(a)*l,-Math.cos(a)*l);br(l*.7,a-.5,d+1);br(l*.7,a+.45,d+1);c.restore()};c.save();c.translate(x,H-50);br(46*sc,Math.sin(t+x)*.06,0);c.restore()}});
+  /* kuleler */for(const [id,x] of [['kuleL',cx-170],['kuleR',cx+170]])part(id,gh=>{c.fillStyle=gh?'rgba(255,255,255,.5)':pearlCol(base-210,base);c.strokeStyle='#fff';c.lineWidth=gh?2:0;c.beginPath();c.roundRect(x-26,base-170,52,170,10);gh?c.stroke():c.fill();
+      c.fillStyle=gh?'rgba(255,255,255,.5)':'#F6B0C8';c.beginPath();c.moveTo(x-34,base-168);for(let i=0;i<=6;i++){const yy=base-168-i*13,w=34-i*5.5;c.lineTo(x+(i%2?w:-w),yy)}c.lineTo(x,base-252);c.closePath();gh?c.stroke():c.fill();
+      if(!gh){c.fillStyle='#0A3E5E';c.beginPath();c.arc(x,base-110,9,Math.PI,0);c.lineTo(x+9,base-92);c.lineTo(x-9,base-92);c.fill()}});
+  /* zemin */part('zemin',gh=>{c.fillStyle=gh?'rgba(255,255,255,.5)':'#F7DCC8';c.beginPath();c.moveTo(cx-180,base+16);for(let i=0;i<=8;i++){const x=cx-180+i*45;c.quadraticCurveTo(x+22,base-6,x+45,base+16)}c.lineTo(cx+180,base+34);c.lineTo(cx-180,base+34);c.closePath();gh?c.stroke():c.fill();
+      if(!gh){c.strokeStyle='rgba(180,110,80,.35)';c.lineWidth=2;for(let i=0;i<8;i++){c.beginPath();c.moveTo(cx-158+i*45,base+30);c.lineTo(cx-158+i*45,base+6);c.stroke()}}});
+  /* sütunlar */part('sutun',gh=>{for(const x of [cx-110,cx-45,cx+45,cx+110]){c.fillStyle=gh?'rgba(255,255,255,.5)':pearlCol(base-150,base);c.beginPath();c.roundRect(x-13,base-140,26,140,8);gh?(c.strokeStyle='#fff',c.lineWidth=2,c.stroke()):c.fill();
+      if(!gh){c.fillStyle='rgba(120,100,160,.25)';c.fillRect(x+4,base-136,5,132)}}});
+  /* kubbe */part('kubbe',gh=>{const q=c.createRadialGradient(cx-40,base-240,10,cx,base-160,170);q.addColorStop(0,'#fff');q.addColorStop(.5,'#E9DDF7');q.addColorStop(1,'#A895CC');c.fillStyle=gh?'rgba(255,255,255,.5)':q;
+      c.beginPath();c.moveTo(cx-140,base-140);c.quadraticCurveTo(cx-140,base-290,cx,base-292);c.quadraticCurveTo(cx+140,base-290,cx+140,base-140);c.closePath();gh?(c.strokeStyle='#fff',c.lineWidth=2,c.stroke()):c.fill();
+      if(!gh){c.fillStyle='#F7DCC8';c.fillRect(cx-150,base-152,300,16);c.strokeStyle='rgba(120,90,170,.3)';c.lineWidth=3;for(const k of [-.6,-.2,.2,.6]){c.beginPath();c.moveTo(cx+k*140,base-140);c.quadraticCurveTo(cx+k*70,base-260,cx,base-290);c.stroke()}}});
+  /* kemer */part('kemer',gh=>{c.strokeStyle=gh?'#fff':'#3FCF7A';c.lineWidth=gh?3:10;c.lineCap='round';c.beginPath();c.moveTo(cx-40,base);c.quadraticCurveTo(cx-44,base-110+Math.sin(t*1.5)*3,cx,base-112);c.quadraticCurveTo(cx+44,base-110-Math.sin(t*1.5)*3,cx+40,base);c.stroke();
+      if(!gh){c.fillStyle='#0A3E5E';c.beginPath();c.moveTo(cx-30,base);c.quadraticCurveTo(cx-30,base-96,cx,base-98);c.quadraticCurveTo(cx+30,base-96,cx+30,base);c.fill()}});
+  /* çeşme */part('cesme',gh=>{c.fillStyle=gh?'rgba(255,255,255,.5)':'#9FE3F5';c.beginPath();c.ellipse(cx,H-34,50,12,0,0,7);gh?(c.strokeStyle='#fff',c.stroke()):c.fill();
+      if(!gh)for(let i=0;i<14;i++){const k=((t*.6+i/14)%1),bx=cx+Math.sin(i*2.3+t)*24*k,by=H-40-k*170;c.strokeStyle=`rgba(230,252,255,${1-k})`;c.lineWidth=2;c.beginPath();c.arc(bx,by,3+(i%3)*2,0,7);c.stroke()}});
+  /* fenerler */part('fener',gh=>{for(const [x,y] of [[cx-110,base-160],[cx+110,base-160],[cx-170,base-262],[cx+170,base-262]]){const gl=.6+.4*Math.sin(t*3+x);
+      if(!gh){const q=c.createRadialGradient(x,y,0,x,y,40);q.addColorStop(0,`rgba(255,240,170,${.75*gl})`);q.addColorStop(1,'rgba(255,240,170,0)');c.fillStyle=q;c.beginPath();c.arc(x,y,40,0,7);c.fill()}
+      c.fillStyle=gh?'rgba(255,255,255,.5)':'#FFF3B0';c.beginPath();c.arc(x,y,8,0,7);gh?(c.strokeStyle='#fff',c.stroke()):c.fill()}});
+  /* taç */part('tac',gh=>{const y=base-306;if(!gh){c.save();c.globalCompositeOperation='lighter';for(let i=0;i<10;i++){const a=i/10*Math.PI*2+t*.3;c.fillStyle='rgba(255,240,190,.12)';c.beginPath();c.moveTo(cx,y);c.lineTo(cx+Math.cos(a-.08)*150,y+Math.sin(a-.08)*150);c.lineTo(cx+Math.cos(a+.08)*150,y+Math.sin(a+.08)*150);c.fill()}c.restore()}
+      if(gh){c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();c.arc(cx,y,24,0,7);c.stroke()}else pearl(c,cx,y,24)});
+  /* sakinler: kurtarılan bekçiler ve yavru balık */
+  (S.rescued||[]).forEach((id,i)=>{const a=t*.35+i*2.1,x=cx+Math.cos(a)*230,y=base-150+Math.sin(a*1.3)*80;drawBoss(c,id,x,y,62,t+i,'free')});
+  if(featOn('pet'))drawPet(c,cx+Math.cos(t*.5)*120,base-40+Math.sin(t)*16,70,petLv(),'happy',t);
+  c.restore()}
+function openBook(){const L2=$('bookList');L2.innerHTML='';const items=[['Açılış: İnciland\'ın hikayesi',()=>openStory()]];
+  for(const id of (S.rescued||[])){const B=BOSSES.find(b=>b.id===id);if(B)items.push([`${B.name} kurtuldu`,()=>openStory(bossStory(B))])}
+  for(const [t2,fn] of items){const b=document.createElement('button');b.type='button';b.textContent=t2;b.onclick=()=>{show($('ovBook'),false);fn()};L2.appendChild(b)}
+  if(!(S.rescued||[]).length)L2.insertAdjacentHTML('beforeend','<p class="note">Bekçileri kurtardıkça yeni sahneler buraya eklenir.</p>');show($('ovBook'),true)}
+$('bookBtn').onclick=openBook;$('bookClose').onclick=()=>show($('ovBook'),false);
 function renderMap(){
   renderGrain();const P0=PG0(),PN=PGN(),m=$('map'),H=(PN+1)*GAP+50+MTOP,W=Math.min(440,innerWidth);m.style.height=H+'px';m.innerHTML='';
   const cur=unlocked();let d='';for(let i=P0;i<P0+PN;i++){const p=nodePos(i);d+=(i>P0?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)}
@@ -1888,7 +1965,7 @@ function renderMap(){
 }
 const FEAT=[
   {id:'pet',lv:2,title:'Yavru balığın',text:'Minik artık seninle! Onu besle, büyüt; büyüdükçe sana can ve inci kazandırır.'},
-  {id:'reef',lv:3,title:'Resif',text:'Yıldızlarla resif istasyonlarını aç, incilerle onar. Her istasyon kalıcı bir avantaj verir.'},
+  {id:'reef',lv:3,title:'İnci Sarayı',text:'İncilerinle sarayı parça parça kur. Kurtardığın bekçiler burada yaşar; resif istasyonları da burada.'},
   {id:'daily',lv:5,title:'Günlük Dalış',text:'Her gün yeni bir özel bölüm. Üst üste günler serini büyütür.'},
   {id:'cards',lv:6,title:'Deniz ansiklopedisi',text:'Canlıları toplayıp kurtardıkça kartlar açılır. Her kartta gerçek bir bilgi var.'},
   {id:'gold',lv:10,title:'Altın İnci',text:'Bitirdiğin bölümlere haritadan dokun: daha az hamleyle bitir, altın inciyi kazan.'}];
@@ -1943,7 +2020,7 @@ function renderTop(){tickLives();checkCards(false);show($('cardDot'),(S.cards||[
   show($('reefDot'),ST.some((s,i)=>!S.st[i]&&totalStars()>=s[1]&&S.coins>=s[2]))}
 function toMap(){document.body.classList.remove('ingame');musMuffle(false);if(MUS.on){MUS.mode='calm';musVol()}setTimeout(startPetLoop,0);try{fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fx.width,fx.height);parts=[];exits=[];scenes=[];floats=[];flyers=[];fxDirty=true}catch(e){}show($('game'),false);show($('home'),true);renderTop();{const np=Math.floor(unlocked()/100);if(np!==PAGE){PAGE=np;if(np>0&&!(S.pageSeen||[]).includes(np)){S.pageSeen=(S.pageSeen||[]).concat(np);setTimeout(()=>diyarBanner(np),400)}}}renderMap();renderPlayBar();renderReef();setTab('map');applyFeat();if(!S.story0)setTimeout(()=>openStory(),450);else setTimeout(nextFeatPopup,700)}
 function setTab(t){show($('playBar'),t==='map');[['tabMap','map','mapView'],['tabReef','reef','reefView'],['tabCards','cards','cardView']].forEach(([b,k,v])=>{$(b).setAttribute('aria-selected',t===k);show($(v),t===k)});if(t==='map')scrollToCur();if(t==='cards'){renderCards();S.cardSeen=(S.cards||[]).length;save();show($('cardDot'),false)}}
-$('tabMap').onclick=()=>setTab('map');$('tabCards').onclick=()=>setTab('cards');$('tabReef').onclick=()=>{renderReef();setTab('reef')};
+$('tabMap').onclick=()=>setTab('map');$('tabCards').onclick=()=>setTab('cards');$('tabReef').onclick=()=>{renderReef();renderPalace();setTab('reef')};
 
 /* ===== resif istasyonları ===== */
 function stArt(i,own){const cv=document.createElement('canvas');cv.width=cv.height=112;const c=cv.getContext('2d');
@@ -2201,11 +2278,11 @@ const dailyStreak=()=>!S.daily?0:(S.daily.last===today()||S.daily.last===yesterd
 function dailyReward(){
   const prev=S.daily||{last:'',streak:0};
   const streak=prev.last===yesterday()?prev.streak+1:prev.last===today()?prev.streak:1;
-  const coins=50+10*Math.min(streak,7);S.daily={last:today(),streak};S.coins+=coins;return {coins,streak}}
+  const coins=50+10*Math.min(streak,7)+(petLv()>=6?20:0);S.daily={last:today(),streak};S.coins+=coins;return {coins,streak}}
 
 /* ===== Yavru balık ===== */
-const PET_LV=[{need:0,name:'Yavru'},{need:5,name:'Genç'},{need:15,name:'Yetişkin'},{need:30,name:'Bilge'}];
-const PET_COL=['#7FD3FF','#3EE0CF','#FFB14A','#FFD45A'];
+const PET_LV=[{need:0,name:'Yavru'},{need:5,name:'Genç'},{need:15,name:'Yetişkin'},{need:30,name:'Bilge'},{need:50,name:'Parlak'},{need:80,name:'Işıltılı'},{need:120,name:'Mercan Dostu'},{need:170,name:'Derin Kaşif'},{need:230,name:'Işık Bekçisi'},{need:300,name:'Işık Taşıyıcı'}];
+const PET_COL=['#7FD3FF','#3EE0CF','#FFB14A','#FFD45A','#FF8FB1','#B983FF','#FF7A6B','#5CE1E6','#9DF07A','#FFF1C2'];
 function pet(){S.pet=S.pet||{name:'Minik',xp:0,fed:'',seen:today()};return S.pet}
 const petLv=()=>{const x=pet().xp;let l=0;PET_LV.forEach((p,i)=>{if(x>=p.need)l=i});return l};
 let petMood={k:'idle',t:0},petJump=0;
@@ -2214,7 +2291,7 @@ function petXP(n){const before=petLv();pet().xp+=n;save();if(petLv()>before){pet
   if(typeof floats!=='undefined'&&BW&&!$('game').hidden)floats.push({x:OX+BW/2,y:OY+BH*.25,t:0,txt:`${pet().name} büyüdü!`,big:1})}}
 /* çizim: büyüdükçe rengi, yüzgeçleri ve tacı değişir */
 function drawPet(c,cx,cy,s,lv,mood,t){
-  const u=s/100,col=PET_COL[lv],sc=.72+lv*.1;c.save();c.translate(cx,cy);c.scale(sc,sc);
+  const u=s/100,col=PET_COL[lv],sc=.72+Math.min(lv,3)*.1+Math.max(0,lv-3)*.015;if(lv>=6){const ag=c.createRadialGradient(cx,cy,s*.1,cx,cy,s*.62);ag.addColorStop(0,'rgba(255,245,200,.35)');ag.addColorStop(1,'rgba(255,245,200,0)');c.fillStyle=ag;c.beginPath();c.arc(cx,cy,s*.62,0,7);c.fill()}c.save();c.translate(cx,cy);c.scale(sc,sc);
   const wag=Math.sin(t*(mood==='sleep'?2:7))*.25;
   /* kuyruk */
   c.save();c.translate(30*u,0);c.rotate(wag);c.fillStyle=col;c.globalAlpha=.9;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(22*u,-24*u,30*u,-20*u);c.quadraticCurveTo(20*u,0,30*u,20*u);c.quadraticCurveTo(22*u,24*u,0,0);c.fill();c.restore();
@@ -2256,7 +2333,7 @@ function paintPet(cv,dt,t){const c=cv.getContext('2d'),d=Math.min(devicePixelRat
 /* haritadaki balık döngüsü */
 let petRaf=0,petLast=0;
 function petLoop(now){const dt=Math.min(.05,(now-petLast)/1000||0);petLast=now;
-  if($('home').hidden){petRaf=0;return}paintPet($('petMap'),dt,now/1000);try{mapAnimDraw(now/1000)}catch(e){}petRaf=requestAnimationFrame(petLoop)}
+  if($('home').hidden){petRaf=0;return}paintPet($('petMap'),dt,now/1000);try{mapAnimDraw(now/1000)}catch(e){}try{paintPalace(dt,now/1000)}catch(e){}petRaf=requestAnimationFrame(petLoop)}
 function startPetLoop(){if(!petRaf){petLast=performance.now();petRaf=requestAnimationFrame(petLoop)}}
 /* balık paneli */
 let petPanelRaf=0;
@@ -2269,7 +2346,7 @@ function renderPet(){const p=pet(),l=petLv(),nx=PET_LV[l+1];
   $('petBar').style.width=nx?((p.xp-PET_LV[l].need)/(nx.need-PET_LV[l].need)*100)+'%':'100%';
   $('petNext').textContent=nx?`${nx.name} olmasına ${nx.need-p.xp} sevgi puanı kaldı`:'En büyük haline ulaştı!';
   const fed=p.fed===today();$('petFeed').disabled=fed||S.coins<20;$('petFeed').textContent=fed?'Bugün beslendi':S.coins<20?'Besle · 20 inci (sende '+S.coins+')':'Besle · 20 inci';
-  $('petPerks').innerHTML=[['Genç','Beslediğin her gün +1 can'],['Yetişkin','Zaferlerde %10 fazla inci'],['Bilge','Bölümlerin yarısına yunusla başlarsın']].map(([n,t],i)=>`<li class="${l>=i+1?'on':''}"><b>${n}:</b> ${t}</li>`).join('')}
+  $('petPerks').innerHTML=[['Genç','Beslediğin her gün +1 can'],['Yetişkin','Zaferlerde %10 fazla inci'],['Bilge','Bölümlerin yarısına yunusla başlarsın'],['Parlak','Bölge sandıklarında +50 inci'],['Işıltılı','Hazine bölümlerinde %20 fazla inci'],['Mercan Dostu','Günlük Dalış ödülü +20 inci'],['Derin Kaşif','Bekçilere 10 hasarla başlarsın'],['Işık Bekçisi','Her bölüme +1 hamle'],['Işık Taşıyıcı','Her bölümde bir kez bedava çekiç']].map(([n,t],i)=>`<li class="${petLv()>=i+1?'on':''}"><b>${n}:</b> ${t}</li>`).join('')}
 
 /* iPhone'da ana ekrandan açılınca %100 yükseklik ekrandan kısa hesaplanabiliyor: gerçek pencere yüksekliğine sabitle */
 const STANDALONE=navigator.standalone||matchMedia('(display-mode: fullscreen),(display-mode: standalone)').matches;
