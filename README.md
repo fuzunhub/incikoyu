@@ -24,7 +24,7 @@ Fuzun Games'in su altı eşleştirme bulmacası. Büyük İnci 10.000 taneye bö
 - **Dede Kabuk'un hikayesi:** ilk girişte açılış hikayesi; Ayarlar'dan tekrar izlenebilir.
 - **Bekçiler:** her diyarın 100. bölümünde canı olan bir bekçi (Kum Yengeci, Düğümcü Yengeç, Hızlı Uskumru Sürüsü, Dev İstiridye). Eşleştirdiğin her canlı ona vurur; birkaç hamlede bir saldırır (kaya atar, ağ atar, satırları kaydırır). Yenilince kurtulur.
 - **Özel bölümler:** her 10 bölümde bir sırayla: *Hazine* (kaybetmek yok, topladığın her canlı bir inci), *Bulmaca* (tahta hep aynı, 3 hamlede çöz, can gitmez), *Kurtarma* (ağdaki yavruları kurtar).
-- **Özel objeler:** dalga (4'lü), kabarcık bombası (L/T), yunus (2×2), inci girdabı (5'li). Kendi renkleriyle eşleşince patlarlar; eşleşme olmasa da hangi yöne kaydırırsan kaydır görevlerini yaparlar. İki özel objeyi birbirine kaydırınca birleşik patlama olur.
+- **Özel objeler:** dalga (4'lü), kabarcık bombası (L/T), yunus (2×2), inci girdabı (5'li). Kendi renkleriyle eşleşince patlarlar; kaydırdığında da (eşleşme olsa da olmasa da) her zaman görevlerini yaparlar. Satın alınanlarla oyunda oluşturulanlar aynı çalışır. İki özel objeyi birbirine kaydırınca birleşik patlama olur.
 - **İnci harcama:** bölüm öncesi güçlendiriciler (dalga, kabarcık, yunus, girdap, +3 hamle) ve oyun içi aletler (çekiç, satır, sütun).
 - **İnci Sarayı:** incilerle 10 parça kurulur (zemin, sütunlar, kubbe, kemer, bahçe, kuleler, fenerler, çeşme, inci taç). Kurtarılan bekçiler sarayda yüzer. **Hikaye Kitabı**'ndan izlenen sahneler tekrar açılır.
 - **Yavru balık:** besle, büyüt; 10 aşama (Yavru'dan Işık Taşıyıcı'ya), her aşama yeni bir avantaj ve görünüm verir. Adını sen koyarsın.
