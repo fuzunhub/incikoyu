@@ -1,0 +1,20 @@
+{
+  "_not": "Karakter -> ElevenLabs ses ID. 'gecici: true' olanlar Voice Design ile yeniden üretilmeli (promptlar README'de). TAKLIT satırları aynı karakter sesiyle, daha düşük stability ile üretilir; efekt post'ta eklenir.",
+  "model_id": "eleven_v3",
+  "output_format": "mp3_44100_128",
+  "language_code": "tr",
+  "taklit_stability": 0.0,
+  "karakterler": {
+    "ECE":      { "voice_id": "aEJD8mYP0nuof1XHShVY", "ad": "GÖZDE ARIKAN (genç, doğal)", "stability": 0.5 },
+    "BARIŞ":    { "voice_id": "lSX8MEhRyl5ZEeI3jfgm", "ad": "Fırat Meriç (genç erkek)", "stability": 0.5 },
+    "LEYLA":    { "voice_id": "MVrGrDz6RtgaG2vQWzbU", "ad": "Ayşegül (orta yaş kadın)", "stability": 0.5 },
+    "NEVİN":    { "voice_id": "s89RnwjzsnFYXLLecY7L", "ad": "Gülşah (sıcak) - GEÇİCİ, yaşlı kadın sesi tasarlanmalı", "stability": 0.5, "gecici": true },
+    "REMZİ":    { "voice_id": "tILIOdKERNNbBHVEXk7I", "ad": "Hasan Yasin - GEÇİCİ, yaşlı erkek sesi tasarlanmalı", "stability": 0.5, "gecici": true },
+    "SEVİM":    { "voice_id": "LYfSi2g3Frvxg50fRl91", "ad": "sevimcast - GEÇİCİ, yaşlı kadın sesi tasarlanmalı", "stability": 0.5, "gecici": true },
+    "DENİZ":    { "voice_id": "oPC5I9GKjMReiaM29gjY", "ad": "Gökçe Deniz (sevimli) - GEÇİCİ, çocuk sesi tasarlanmalı", "stability": 0.5, "gecici": true },
+    "CEMAL":    { "voice_id": "5nr6ATQepuidiLb6OT3B", "ad": "EMRE GÖKÇE (anlatıcı) - GEÇİCİ", "stability": 0.5, "gecici": true },
+    "HİKMET":   { "voice_id": "Vv1QW9Yx3WB2mLKFmyZG", "ad": "Kaya (sakin erkek)", "stability": 0.5 },
+    "OPERATÖR": { "voice_id": "r3deco0KTo6o0Kb5inro", "ad": "Sıla Özalp (haber anlatımı)", "stability": 1.0 },
+    "TAKLİTÇİ": { "voice_id": "Q5n6GDIjpN0pLOlycRFT", "ad": "Yunus (derin) - post'ta ağır efekt", "stability": 0.0 }
+  }
+}
