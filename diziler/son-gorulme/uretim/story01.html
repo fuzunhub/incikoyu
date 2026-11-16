@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#000"><canvas id=c></canvas>
+<script src="veri01.js"></script><script src="ciz.js"></script>
+<script>
+const cv=document.getElementById('c');cv.width=W;cv.height=H;const g=cv.getContext('2d',{willReadFrequently:true});grainHazirla();
+// üst rozet (şeffaf) — ilk 5,2 sn videonun üstüne
+function rozet(){g.clearRect(0,0,W,H);
+ g.fillStyle='#c4161c';rr(g,W/2-250,300,500,84,42);g.fill();
+ g.fillStyle='#fff';g.beginPath();g.arc(W/2-195,342,11,0,TAU);g.fill();
+ yazi(g,'YENİ BÖLÜM',W/2+22,343,44,{stroke:false,spacing:6});}
+// kapanış kartı
+function kart(t){g.setTransform(1,0,0,1,0,0);g.fillStyle='#030303';g.fillRect(0,0,W,H);
+ const rg=g.createRadialGradient(W/2,900,50,W/2,900,800);rg.addColorStop(0,'rgba(150,10,20,.45)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(0,0,W,H);
+ const gl=(t>.5&&t<.56)||(t>1.12&&t<1.18)?12:3, a=ss(0,.15,t), sl=1+.35*(1-ss(0,.18,t));
+ g.save();g.globalAlpha=ss(0,.2,t);g.fillStyle='#c4161c';rr(g,W/2-300,560,600,92,46);g.fill();
+ yazi(g,'YENİ BÖLÜM YAYINDA',W/2,607,46,{stroke:false,spacing:4});g.restore();
+ g.save();g.translate(W/2,860);g.scale(sl,sl);g.translate(-W/2,-860);
+ for(const [dx,col] of [[-gl,'rgba(255,0,40,.8)'],[gl,'rgba(0,220,255,.6)'],[0,'#f4efe6']]){
+  yazi(g,'SON',W/2+dx,790,150,{font:'DejaVu Serif',color:col,stroke:false,spacing:30,alpha:a});
+  yazi(g,'GÖRÜLME',W/2+dx,940,150,{font:'DejaVu Serif',color:col,stroke:false,spacing:6,alpha:a});}
+ g.restore();
+ yazi(g,'1. Bölüm · Çevrimiçi',W/2,1100,52,{weight:400,stroke:false,color:'#e8e2d8',alpha:ss(.2,.4,t)});
+ g.save();g.globalAlpha=ss(.4,.6,t);g.strokeStyle='#fff';g.lineWidth=4;rr(g,W/2-250,1220,500,100,50);g.stroke();
+ yazi(g,'Profilde izle',W/2,1271,46,{stroke:false});g.restore();
+ const ar=ss(.6,.8,t), bob=Math.sin(t*8)*10;
+ g.save();g.globalAlpha=ar;g.fillStyle='#fff';g.beginPath();g.moveTo(W/2,1360+bob);g.lineTo(W/2-28,1405+bob);g.lineTo(W/2+28,1405+bob);g.fill();g.restore();
+ g.fillStyle='rgba(0,0,0,.18)';for(let y=0;y<H;y+=6)g.fillRect(0,y,W,2);
+ sonIslem(g,t,{vig:.8,grain:.1});}
+</script></body></html>
