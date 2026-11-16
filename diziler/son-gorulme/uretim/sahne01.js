@@ -270,15 +270,5 @@ cek(114, 116.4, t => {
   renk('#4a5a8a', 'multiply', .35);
   g.restore();
 });
-cek(116.4, 120.01, t => {
-  g.fillStyle = '#000'; g.fillRect(-200, -200, W + 400, H + 400);
-  if (t > 117.2) {
-    const a = ss(117.2, 117.6, t), gl = Math.random() < .15 ? 8 : 0;
-    yazi(g, 'SON GÖRÜLME', W / 2 - gl, H / 2 - 40, 112, { font: 'DejaVu Serif', color: 'rgba(255,40,40,.7)', stroke: false, alpha: a, spacing: 10 });
-    yazi(g, 'SON GÖRÜLME', W / 2 + gl * .5, H / 2 - 40, 112, { font: 'DejaVu Serif', stroke: false, alpha: a, spacing: 10 });
-    yazi(g, 'Bölüm 2: Islak İzler', W / 2, H / 2 + 70, 40, { weight: 400, stroke: false, alpha: ss(118, 118.4, t), color: '#bbb' });
-    g.fillStyle = `rgba(37,211,102,${ss(119, 119.2, t)})`; g.beginPath(); g.arc(W / 2 - 115, H / 2 + 150, 9, 0, TAU); g.fill();
-    yazi(g, 'çevrimiçi', W / 2 + 10, H / 2 + 150, 34, { weight: 400, stroke: false, alpha: ss(119, 119.2, t), color: '#25d366' });
-  }
-});
+cek(116.4, 120.01, t => bitisKarti(t, 116.4, 'Bölüm 2: Islak İzler', 119));
 

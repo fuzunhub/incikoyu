@@ -198,6 +198,22 @@ function eceYakin(t, a, b, o = {}) {
   renk(o.grade || '#4a5a8a', 'multiply', o.gradeA || .5);
 }
 
+// bölüm sonu kartı: iki satır başlık, ekrana sığar (t0: kartın başladığı an, ad: sonraki bölüm, bild: çevrimiçi bildirimi anı)
+function bitisKarti(t, t0, ad, bild) {
+  g.fillStyle = '#000'; g.fillRect(-200, -200, W + 400, H + 400);
+  if (t < t0 + .6) return;
+  const a = ss(t0 + .6, t0 + 1, t), gl = Math.random() < .15 ? 8 : 0;
+  for (const [dx, col] of [[-gl, 'rgba(255,40,40,.7)'], [gl * .5, '#ffffff']]) {
+    yazi(g, 'SON', W / 2 + dx, H / 2 - 150, 130, { font: 'DejaVu Serif', color: col, stroke: false, alpha: a, spacing: 26 });
+    yazi(g, 'GÖRÜLME', W / 2 + dx, H / 2 - 10, 130, { font: 'DejaVu Serif', color: col, stroke: false, alpha: a, spacing: 4 });
+  }
+  yazi(g, ad, W / 2, H / 2 + 120, 42, { weight: 400, stroke: false, alpha: ss(t0 + 1.2, t0 + 1.6, t), color: '#bbb' });
+  const b = ss(bild, bild + .2, t);
+  g.font = '400 34px DejaVu Sans'; const tw = g.measureText('çevrimiçi').width;
+  g.fillStyle = `rgba(37,211,102,${b})`; g.beginPath(); g.arc(W / 2 - tw / 2 - 22, H / 2 + 200, 9, 0, TAU); g.fill();
+  yazi(g, 'çevrimiçi', W / 2 + 4, H / 2 + 200, 34, { weight: 400, stroke: false, alpha: b, color: '#25d366' });
+}
+
 // ---------- çekim listesi altyapısı ----------
 const C = [];
 const cek = (a, b, f, subY) => C.push({ a, b, f, subY });

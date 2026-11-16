@@ -290,14 +290,4 @@ cek(82.2, 86, t => {
   g.restore();
   if (t > 84.4) { g.fillStyle = `rgba(90,0,0,${.25 * ss(84.4, 85, t)})`; g.fillRect(0, 0, W, H); }
 });
-cek(86, 90.01, t => {
-  g.fillStyle = '#000'; g.fillRect(-200, -200, W + 400, H + 400);
-  if (t > 86.6) {
-    const a = ss(86.6, 87, t), gl = Math.random() < .15 ? 8 : 0;
-    yazi(g, 'SON GÖRÜLME', W / 2 - gl, H / 2 - 40, 112, { font: 'DejaVu Serif', color: 'rgba(255,40,40,.7)', stroke: false, alpha: a, spacing: 10 });
-    yazi(g, 'SON GÖRÜLME', W / 2 + gl * .5, H / 2 - 40, 112, { font: 'DejaVu Serif', stroke: false, alpha: a, spacing: 10 });
-    yazi(g, 'Bölüm 3: Kullanılmayan Numara', W / 2, H / 2 + 70, 40, { weight: 400, stroke: false, alpha: ss(87.2, 87.6, t), color: '#bbb' });
-    g.fillStyle = `rgba(37,211,102,${ss(88.6, 88.8, t)})`; g.beginPath(); g.arc(W / 2 - 115, H / 2 + 150, 9, 0, TAU); g.fill();
-    yazi(g, 'çevrimiçi', W / 2 + 10, H / 2 + 150, 34, { weight: 400, stroke: false, alpha: ss(88.6, 88.8, t), color: '#25d366' });
-  }
-});
+cek(86, 90.01, t => bitisKarti(t, 86, 'Bölüm 3: Kullanılmayan Numara', 88.6));
