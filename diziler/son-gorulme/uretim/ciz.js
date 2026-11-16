@@ -350,7 +350,7 @@ function telefonEkrani(g, x, y, w, S) {
   g.fillStyle = '#1f2c34'; g.fillRect(0, 9 * u, w, 15 * u);
   g.fillStyle = '#e9edef'; g.font = `${6 * u}px DejaVu Sans`; g.textAlign = 'left'; g.fillText('‹', 3 * u, 19 * u);
   g.save(); g.beginPath(); g.arc(16 * u, 16.5 * u, 5.2 * u, 0, TAU); g.clip(); g.fillStyle = '#c9a36a'; g.fillRect(10 * u, 11 * u, 12 * u, 12 * u);
-  figur(g, { x: 16 * u, y: 16.5 * u + 9 * u, s: 6.5 * u, kim: 'NEVIN', smile: .6, noLegs: true }); g.restore();
+  figur(g, { x: 16 * u, y: 16.5 * u + 4.57 * 6.5 * u + .8 * u, s: 6.5 * u, kim: 'NEVIN', smile: .6, noLegs: true }); g.restore();
   g.fillStyle = '#e9edef'; g.font = `600 ${5 * u}px DejaVu Sans`; g.fillText('Ninem', 24 * u, 15.5 * u);
   cicek(g, 24 * u + g.measureText('Ninem').width + 3.5 * u, 13.8 * u, 2 * u);
   if (S.status) { g.fillStyle = S.statusCol || '#8696a0'; g.font = `${3.4 * u}px DejaVu Sans`; g.fillText(S.status, 24 * u, 20.5 * u); }
@@ -370,7 +370,7 @@ function telefonEkrani(g, x, y, w, S) {
       else { g.moveTo(bx + 5 * u, by + 4 * u); g.lineTo(bx + 10 * u, by + 7 * u); g.lineTo(bx + 5 * u, by + 10 * u); g.fill(); }
       dalga(g, bx + 13 * u, by + 7 * u, 40 * u, 6 * u, M.prog || 0, M.seed || 1, 'rgba(233,237,239,.45)', '#53bdeb');
       g.fillStyle = 'rgba(233,237,239,.7)'; g.font = `${3 * u}px DejaVu Sans`; g.textAlign = 'left'; g.fillText(M.dur, bx + 13 * u, by + 13.4 * u);
-      if (!M.out) { g.save(); g.beginPath(); g.arc(bx + bw - 7 * u, by + 7.5 * u, 4.5 * u, 0, TAU); g.clip(); g.fillStyle = '#c9a36a'; g.fillRect(bx + bw - 12 * u, by + 2 * u, 10 * u, 11 * u); figur(g, { x: bx + bw - 7 * u, y: by + 7.5 * u + 8 * u, s: 5.6 * u, kim: 'NEVIN', smile: .5, noLegs: true }); g.restore(); }
+      if (!M.out) { g.save(); g.beginPath(); g.arc(bx + bw - 7 * u, by + 7.5 * u, 4.5 * u, 0, TAU); g.clip(); g.fillStyle = '#c9a36a'; g.fillRect(bx + bw - 12 * u, by + 2 * u, 10 * u, 11 * u); figur(g, { x: bx + bw - 7 * u, y: by + 7.5 * u + 4.57 * 5.6 * u + .7 * u, s: 5.6 * u, kim: 'NEVIN', smile: .5, noLegs: true }); g.restore(); }
     } else {
       g.fillStyle = '#e9edef'; g.font = `${M.big ? 700 : 400} ${(M.big ? 5.4 : 3.8) * u}px DejaVu Sans`; g.textAlign = 'left';
       g.fillText(M.text, bx + 3.5 * u, by + bh * .62);
