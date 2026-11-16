@@ -358,8 +358,17 @@ function telefonEkrani(g, x, y, w, S) {
   let by = hh - 18 * u;
   const msgs = (S.msgs || []).slice().reverse();
   for (const M of msgs) {
-    const bw = M.type === 'voice' ? 66 * u : Math.min(70 * u, 8 * u + M.text.length * 3.4 * u * (M.big ? 1.6 : 1));
-    const bh = M.type === 'voice' ? 15 * u : (M.big ? 14 * u : 10 * u);
+    let lines = null;
+    if (M.type !== 'voice') {
+      g.font = `${M.big ? 700 : 400} ${(M.big ? 5.4 : 3.8) * u}px DejaVu Sans`;
+      lines = []; let cur = '';
+      for (const wd of M.text.split(' ')) { const n = cur ? cur + ' ' + wd : wd; if (g.measureText(n).width > 58 * u && cur) { lines.push(cur); cur = wd; } else cur = n; }
+      lines.push(cur); M._lines = lines;
+    }
+    const tw = lines ? Math.max(...lines.map(l => g.measureText(l).width)) : 0;
+    const bw = M.type === 'voice' ? 66 * u : Math.max(22 * u, tw + 7 * u + (M.out ? 10 * u : 8 * u));
+    const lh = (M.big ? 6.6 : 5) * u;
+    const bh = M.type === 'voice' ? 15 * u : lines.length * lh + 6.5 * u;
     by -= bh + 3 * u;
     const bx = M.out ? w - bw - 4 * u : 4 * u;
     g.globalAlpha = M.alpha == null ? 1 : M.alpha;
@@ -373,7 +382,7 @@ function telefonEkrani(g, x, y, w, S) {
       if (!M.out) { g.save(); g.beginPath(); g.arc(bx + bw - 7 * u, by + 7.5 * u, 4.5 * u, 0, TAU); g.clip(); g.fillStyle = '#c9a36a'; g.fillRect(bx + bw - 12 * u, by + 2 * u, 10 * u, 11 * u); figur(g, { x: bx + bw - 7 * u, y: by + 7.5 * u + 4.57 * 5.6 * u + .7 * u, s: 5.6 * u, kim: 'NEVIN', smile: .5, noLegs: true }); g.restore(); }
     } else {
       g.fillStyle = '#e9edef'; g.font = `${M.big ? 700 : 400} ${(M.big ? 5.4 : 3.8) * u}px DejaVu Sans`; g.textAlign = 'left';
-      g.fillText(M.text, bx + 3.5 * u, by + bh * .62);
+      M._lines.forEach((l, i) => g.fillText(l, bx + 3.5 * u, by + 5.2 * u + i * lh + (M.big ? 1.2 * u : 0)));
     }
     g.fillStyle = 'rgba(233,237,239,.6)'; g.font = `${2.6 * u}px DejaVu Sans`; g.textAlign = 'right';
     g.fillText(M.time || '', bx + bw - (M.out ? 9 * u : 2.5 * u), by + bh - 1.6 * u);
@@ -386,7 +395,8 @@ function telefonEkrani(g, x, y, w, S) {
     g.fillStyle = '#f15c6d'; g.beginPath(); g.arc(9 * u, hh - 6.5 * u, 2 * u * (0.8 + .2 * Math.sin(S.rec * 8)), 0, TAU); g.fill();
     g.fillStyle = '#e9edef'; g.font = `${3.8 * u}px DejaVu Sans`; g.textAlign = 'left'; g.fillText('0:0' + Math.floor(S.rec), 14 * u, hh - 5.2 * u);
     dalga(g, 28 * u, hh - 6.5 * u, 50 * u, 5 * u * (0.4 + S.lev), 1, Math.floor(S.rec * 6), '#e9edef', '#e9edef');
-  } else { g.fillStyle = '#2a3942'; rr(g, 4 * u, hh - 10.5 * u, w - 22 * u, 8 * u, 4 * u); g.fill(); g.fillStyle = '#8696a0'; g.font = `${3.4 * u}px DejaVu Sans`; g.textAlign = 'left'; g.fillText('Mesaj', 9 * u, hh - 5.5 * u); }
+  } else { g.fillStyle = '#2a3942'; rr(g, 4 * u, hh - 10.5 * u, w - 22 * u, 8 * u, 4 * u); g.fill(); g.fillStyle = S.input ? '#e9edef' : '#8696a0'; g.font = `${3.4 * u}px DejaVu Sans`; g.textAlign = 'left'; g.fillText(S.input || 'Mesaj', 9 * u, hh - 5.5 * u);
+    if (S.input != null && S.caret) { g.fillStyle = '#00a884'; g.fillRect(9 * u + g.measureText(S.input).width + .5 * u, hh - 9 * u, .5 * u, 4.5 * u); } }
   g.fillStyle = '#00a884'; g.beginPath(); g.arc(w - 9 * u, hh - 6.5 * u, 5 * u, 0, TAU); g.fill();
   g.fillStyle = '#fff'; rr(g, w - 10.2 * u, hh - 10 * u, 2.4 * u, 4.5 * u, 1.2 * u); g.fill(); g.fillRect(w - 9.3 * u, hh - 5 * u, .6 * u, 1.6 * u);
   g.restore();
@@ -435,6 +445,7 @@ function yazi(g, txt, x, y, size, o = {}) {
   g.fillStyle = o.color || '#fff'; g.fillText(txt, x, y); g.restore();
 }
 function altyazi(g, t) {
+  if (window.NOSUB) return;
   const r = konusuyor(t); if (!r || r.noSub) return;
   const words = r.metin.split(' '); const lines = []; let cur = '';
   g.font = '700 50px DejaVu Sans';

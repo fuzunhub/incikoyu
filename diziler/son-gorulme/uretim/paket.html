@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#000"><canvas id=c></canvas>
+<script src="ciz.js"></script>
+<script>
+// Yayın paketi çizimleri: kapaklar (TikTok/Instagram 1080x1920, YouTube 1280x720) ve story kapanış kartı
+const cv = document.getElementById('c'); let g = cv.getContext('2d');
+grainHazirla();
+function boyut(w, h) { cv.width = w; cv.height = h; g = cv.getContext('2d'); }
+function baslik(x, y, s, gl, a = 1) {
+  for (const [dx, col] of [[-gl, 'rgba(255,0,40,.85)'], [gl, 'rgba(0,220,255,.6)'], [0, '#f4efe6']]) {
+    yazi(g, 'SON', x + dx, y - s * .7, s, { font: 'DejaVu Serif', color: col, stroke: false, spacing: s * .2, alpha: a });
+    yazi(g, 'GÖRÜLME', x + dx, y + s * .3, s, { font: 'DejaVu Serif', color: col, stroke: false, spacing: s * .04, alpha: a });
+  }
+}
+function rozet(x, y, txt, s) {
+  g.font = `700 ${s}px DejaVu Sans`; g.letterSpacing = s * .15 + 'px'; const w = g.measureText(txt).width + s * 1.6; g.letterSpacing = '0px';
+  g.fillStyle = '#c4161c'; rr(g, x - w / 2, y - s * .9, w, s * 1.8, s * .25); g.fill();
+  yazi(g, txt, x, y + 2, s, { stroke: false, spacing: s * .15 });
+}
+function tarama(w, h) { g.fillStyle = 'rgba(0,0,0,.16)'; for (let y = 0; y < h; y += 6) g.fillRect(0, y, w, 2); }
+function vin(w, h, a) { const v = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .3, w / 2, h / 2, Math.max(w, h) * .75); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, `rgba(0,0,0,${a})`); g.fillStyle = v; g.fillRect(0, 0, w, h); }
+function graine(w, h) { g.save(); g.globalAlpha = .1; g.globalCompositeOperation = 'overlay'; g.drawImage(GRAIN[0], 0, 0, w, h); g.restore(); }
+
+// Dikey kapak: TikTok / Instagram Reels (Instagram ızgarası ortadaki 1080x1350'yi gösterir; yazılar o alanda)
+async function dikeyKapak(img, P) {
+  boyut(1080, 1920);
+  g.fillStyle = '#000'; g.fillRect(0, 0, 1080, 1920);
+  g.drawImage(img, 0, -(P.yukari || 260), 1080, 1920);
+  g.save(); g.globalCompositeOperation = 'multiply'; g.fillStyle = '#b04848'; g.globalAlpha = .35; g.fillRect(0, 0, 1080, 1920); g.restore();
+  let gr = g.createLinearGradient(0, 0, 0, 1920); gr.addColorStop(0, 'rgba(0,0,0,.85)'); gr.addColorStop(.3, 'rgba(0,0,0,0)'); gr.addColorStop(.55, 'rgba(0,0,0,.1)'); gr.addColorStop(.8, 'rgba(0,0,0,.92)'); gr.addColorStop(1, 'rgba(0,0,0,.95)');
+  g.fillStyle = gr; g.fillRect(0, 0, 1080, 1920);
+  baslik(540, 1220, 150, 6);
+  rozet(540, 1405, `${P.no}. BÖLÜM`, 50);
+  yazi(g, P.ad, 540, 1510, 56, { weight: 400, stroke: false, color: '#e8e2d8' });
+  yazi(g, P.kanca, 540, 1590, 36, { weight: 400, stroke: false, color: '#bdb5aa' });
+  tarama(1080, 1920); vin(1080, 1920, .7); graine(1080, 1920);
+}
+// YouTube küçük resmi 1280x720: solda bölümden kare, sağda başlık
+async function yatayKapak(img, P) {
+  boyut(1280, 720);
+  g.fillStyle = '#050505'; g.fillRect(0, 0, 1280, 720);
+  const rg = g.createRadialGradient(900, 360, 40, 900, 360, 600); rg.addColorStop(0, 'rgba(150,10,20,.5)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(0, 0, 1280, 720);
+  // dikey kareden yüz bölgesi
+  const sy = P.yKirp || 266;
+  g.drawImage(img, 0, sy, 1080, 1080 * 720 / 560, 0, 0, 560, 720);
+  const sg = g.createLinearGradient(380, 0, 600, 0); sg.addColorStop(0, 'rgba(5,5,5,0)'); sg.addColorStop(1, 'rgba(5,5,5,1)'); g.fillStyle = sg; g.fillRect(380, 0, 220, 720);
+  rozet(920, 150, `${P.no}. BÖLÜM`, 38);
+  baslik(920, 390, 110, 5);
+  yazi(g, P.ad, 920, 560, 46, { weight: 400, stroke: false, color: '#e8e2d8' });
+  tarama(1280, 720); vin(1280, 720, .6); graine(1280, 720);
+}
+// Story kapanış kartı (t: 0..1.8)
+function storyKart(t, P) {
+  boyut(1080, 1920); g.fillStyle = '#030303'; g.fillRect(0, 0, W, H);
+  const rg = g.createRadialGradient(W / 2, 900, 50, W / 2, 900, 800); rg.addColorStop(0, 'rgba(150,10,20,.45)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  const gl = (t > .5 && t < .56) || (t > 1.12 && t < 1.18) ? 12 : 3, sl = 1 + .35 * (1 - ss(0, .18, t));
+  g.save(); g.globalAlpha = ss(0, .2, t); g.fillStyle = '#c4161c'; rr(g, W / 2 - 300, 560, 600, 92, 46); g.fill();
+  yazi(g, 'YENİ BÖLÜM YAYINDA', W / 2, 607, 46, { stroke: false, spacing: 4 }); g.restore();
+  g.save(); g.translate(W / 2, 860); g.scale(sl, sl); g.translate(-W / 2, -860); baslik(W / 2, 895, 150, gl, ss(0, .15, t)); g.restore();
+  yazi(g, `${P.no}. Bölüm · ${P.ad}`, W / 2, 1100, 52, { weight: 400, stroke: false, color: '#e8e2d8', alpha: ss(.2, .4, t) });
+  g.save(); g.globalAlpha = ss(.4, .6, t); g.strokeStyle = '#fff'; g.lineWidth = 4; rr(g, W / 2 - 250, 1220, 500, 100, 50); g.stroke();
+  yazi(g, 'Profilde izle', W / 2, 1271, 46, { stroke: false }); g.restore();
+  const bob = Math.sin(t * 8) * 10; g.save(); g.globalAlpha = ss(.6, .8, t); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(W / 2, 1360 + bob); g.lineTo(W / 2 - 28, 1405 + bob); g.lineTo(W / 2 + 28, 1405 + bob); g.fill(); g.restore();
+  tarama(W, H); sonIslem(g, t, { vig: .8, grain: .1 });
+}
+function storyRozet() { boyut(1080, 1920); g.clearRect(0, 0, W, H); g.fillStyle = '#c4161c'; rr(g, W / 2 - 250, 300, 500, 84, 42); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(W / 2 - 195, 342, 11, 0, TAU); g.fill(); yazi(g, 'YENİ BÖLÜM', W / 2 + 22, 343, 44, { stroke: false, spacing: 6 }); }
+function resimYukle(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; }); }
+</script></body></html>

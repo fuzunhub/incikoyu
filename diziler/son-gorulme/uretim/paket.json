@@ -1,0 +1,17 @@
+{
+  "_not": "Yayın paketi ayarları. story: bölüm videosundan alınacak [başlangıç, bitiş] parçaları (toplam ~5,2 sn, son 1,8 sn kapanış kartı). kapak: kapak arka planı için videodan kare zamanı. kanca: kapaktaki kısa cümle.",
+  "1": {
+    "ad": "Çevrimiçi",
+    "kapak": 113.6,
+    "kanca": "Ölüler mesaj atmaz. Peki bu kim?",
+    "story": [[1.0, 2.5], [105.0, 106.5], [111.9, 113.5], [114.0, 114.6]],
+    "story_ses_son": 116.4
+  },
+  "2": {
+    "ad": "Islak İzler",
+    "kapak": 85.6,
+    "kanca": "Fotoğrafta biri var. Her bakışta daha yakın.",
+    "story": [[4.3, 6.0], [14.4, 16.0], [47.5, 48.5], [84.0, 84.8]],
+    "story_ses_son": 86.6
+  }
+}
