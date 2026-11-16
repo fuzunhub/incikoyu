@@ -158,6 +158,8 @@ Her bölüm sahnelere ayrılmıştır. Her sahnede şunlar var:
 
 ## Seslendirme (ElevenLabs)
 
+> **Telaffuz notu:** eleven_v3 tek başına geçen **"Nine"** kelimesini İngilizce "nayn" diye okuyabiliyor. Ece'nin repliklerinde "Nineciğim" kullanılıyor; `seslendir.py` tek başına "Nine" görürse uyarı verir.
+
 ```bash
 cd diziler/son-gorulme
 python3 seslendir.py --bolum 1 --kuru     # sadece listeler, karakter sayısını gösterir (kredi harcamaz)

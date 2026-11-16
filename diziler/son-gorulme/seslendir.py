@@ -52,6 +52,8 @@ def replikler(bolum_no):
         # *(sesli nefes alıyor)* gibi sahne yönergelerini sesten çıkar
         metin = re.sub(r'"\s*\*\([^)]*\)\*\s*"', " ", metin)
         metin = (etiketler or "").strip() + " " + metin.strip().strip('"')
+        if re.search(r"(?<![\wçğıöşü])[Nn]ine(?![\wçğıöşü])", metin):
+            print(f"  UYARI: tek başına 'Nine' İngilizce 'nayn' okunabiliyor, 'Nineciğim' gibi bir biçim kullan: {metin[:60]}", file=sys.stderr)
         out.append({
             "kisi": kisi,
             "taklit": "TAKLIT" in not_.upper(),

@@ -40,7 +40,7 @@
 **Oyunculuk:** Ece son yazılı sayfalara geliyor. El yazısı bozulmuş, acele ve eğri.
 **Ekran yazısı (sayfa üstü):** `5 Ekim 2026`. *(Ninenin öldüğü gece.)*
 
-> NEVİN (dış ses, sesi kırılır) [crying] [softly]: "Bu gece Ece'nin sesiyle geldi. Torunumun sesiyle. 'Nine, ben geldim, aç' diyor. Kırk yıl dayandım... buna dayanamıyorum."
+> NEVİN (dış ses, sesi kırılır) [crying] [softly]: "Bu gece Ece'nin sesiyle geldi. Torunumun sesiyle. 'Nineciğim, ben geldim, aç' diyor. Kırk yıl dayandım... buna dayanamıyorum."
 > ECE (defterden başını kaldırır, fısıltı) [whispers]: "Benim sesimle mi? Ben o gece İzmir'deydim..."
 
 **Oyunculuk:** Ece telefonunu çıkarıp ninesine attığı eski sesli mesajları hızla kaydırıyor. Yüzlercesi var, aylar boyunca.
@@ -55,7 +55,7 @@
 **Ekran yazısı:** `Kapıyı açacağım. Onu aşağı götüreceğim. Ece'ye dokunamayacak.`
 
 > NEVİN (dış ses, kararlı, fısıltı) [whispers]: "Onu aşağı götüreceğim."
-> ECE (defteri göğsüne bastırarak): "Aşağı... Nereye, nine?"
+> ECE (defteri göğsüne bastırarak): "Aşağı... Nereye, nineciğim?"
 
 **Görüntü:** Hızlı kesme. Boş merdiven boşluğu, kafes kapılı asansör. Panelde **-1** düğmesi tek başına, kırmızı yanıyor.
 **SFX:** Asansör motorunun derinden gelen uğultusu, kimse binmediği hâlde.

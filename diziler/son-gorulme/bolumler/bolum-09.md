@@ -52,7 +52,7 @@
 **Görüntü (telefon inserti):** "Ninem 🌸": `aç. bu o.`
 **Oyunculuk:** Ece mesaja bakıyor. "O" Barış mı, yoksa o şey mi? İkisi de olabilir. Dudakları kıpırdıyor:
 
-> ECE (fısıltı) [whispers]: "Hangi 'o', nine...?"
+> ECE (fısıltı) [whispers]: "Hangi 'o', nineciğim...?"
 
 **Görüntü:** Duvar saati **03:32**. Ece derin bir nefes alıp elini kilide uzatıyor. Anahtarı bir kez çeviriyor. Çok yakın plan: ikinci tur...
 **SFX:** Kilit sesi. Kapı aralanıyor.

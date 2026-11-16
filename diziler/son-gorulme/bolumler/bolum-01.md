@@ -69,7 +69,7 @@
 **Görüntü (balıkgözü):** Nevin Nine. Yeşil şal, inci küpeler, topuz. Gülümsüyor.
 
 > NEVİN (TAKLIT, kapı arkası, fazla tatlı) [softly]: "Ece'm... benim kuzum. Aç kapıyı, üşüdüm."
-> ECE (fısıltı, gözleri dolar) [whispers] [crying]: "Nine...?"
+> ECE (fısıltı, gözleri dolar) [crying]: "Nineciğim...?"
 
 **Oyunculuk:** Ece'nin eli yavaşça kilitteki anahtara gidiyor. Parmakları anahtarı kavrıyor...
 

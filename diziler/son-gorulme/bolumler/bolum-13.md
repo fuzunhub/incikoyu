@@ -29,7 +29,7 @@
 **Oyunculuk:** Ece Barış'a bakıyor; gözlerinde bir umut kıvılcımı. Bant boşta dönüyor, sonra cızırtının içinden başka bir ses, **farklı bir kayıt** başlıyor. Yaşlı bir kadın, çok yakından, sanki bandın içinde sıkışmış gibi:
 
 > NEVİN (kayıt, gerçek, şefkatle) [softly] [crying]: "Ece'm. Kuzum. Ben buradayım. Seslerin içindeyim. Sana yazan benim, inan bana. Onu aşağı ben götürdüm... ama o beni burada tuttu."
-> ECE (ağlayarak, teybe doğru) [crying]: "Nine..."
+> ECE (ağlayarak, teybe doğru) [crying]: "Nineciğim..."
 
 ---
 
@@ -37,7 +37,7 @@
 
 **SFX:** Bant devam ediyor. Ninenin son gecesinin kaydı. Kapı çalınıyor (bant içinden), sonra Ece'nin sesi:
 
-> ECE (TAKLIT, kayıt, 2026 gecesi) [softly]: "Nine, ben geldim. Aç, üşüdüm."
+> ECE (TAKLIT, kayıt, 2026 gecesi) [softly]: "Nineciğim, ben geldim. Aç, üşüdüm."
 > NEVİN (kayıt, o gece, sevinçle) [gasps]: "Ece'm? Kuzum geldi mi?"
 
 **SFX:** Kilit sesi. Kapı açılışı. Bant kesiliyor.
