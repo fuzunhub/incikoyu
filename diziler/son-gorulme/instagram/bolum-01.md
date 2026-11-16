@@ -1,10 +1,5 @@
 # Instagram · Bölüm 1 "Çevrimiçi"
 
-**Kapak görseli:** `cikti/bolum-01-kapak.jpg` (Reels yüklerken "Kapak" → "Galeriden ekle")
-**Videonun ilk saniyesi** aynı kapak, akışta da dikkat çeker.
-
----
-
 ## Açıklama (kopyala-yapıştır)
 
 Ninem 40 gün önce öldü.
