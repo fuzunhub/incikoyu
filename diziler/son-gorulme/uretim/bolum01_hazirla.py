@@ -118,6 +118,9 @@ def main():
         zincir += f",volume={vol},adelay={int(t*1000)}|{int(t*1000)}[e{i}]"
         filtre.append(zincir)
         etiket.append(f"[e{i}]")
+    # amix başlangıcı ilk girişin zamanına kayar; 0. saniyeden başlayan sessiz bir taban ekle
+    filtre.append(f"anullsrc=r=44100:cl=stereo,atrim=0:{SURE}[taban]")
+    etiket.insert(0, "[taban]")
     filtre.append("".join(etiket) + f"amix=inputs={len(etiket)}:normalize=0,"
                   f"atrim=0:{SURE},alimiter=limit=0.95,loudnorm=I=-14:TP=-1.5:LRA=11[out]")
     cmd = ["ffmpeg", "-y", "-v", "error"] + girdiler + ["-filter_complex", ";".join(filtre),
